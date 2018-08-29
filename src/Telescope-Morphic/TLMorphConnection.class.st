@@ -18,7 +18,7 @@ TLMorphConnection class >> fromConnection: aTLConnection [
 { #category : #adapting }
 TLMorphConnection >> adaptToStylesheet: aTLStylesheet [
 	self flag: 'TODO: manage width, etc...';
-		color: Color white"aTLStylesheet color"
+		color: aTLStylesheet color
 ]
 
 { #category : #connecting }
