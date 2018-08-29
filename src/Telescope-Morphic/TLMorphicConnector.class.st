@@ -10,6 +10,12 @@ TLMorphicConnector class >> priority [
 ]
 
 { #category : #view }
+TLMorphicConnector >> addElementConnectionInView: aTLMorphConnection [ 
+	self view
+		addMorph: aTLMorphConnection
+]
+
+{ #category : #view }
 TLMorphicConnector >> addElementLegendInView: aTLMorphicConnector [
 	Halt if: [ aTLMorphicConnector ~= self ].
 	self flag: 'TODO'
@@ -24,6 +30,18 @@ TLMorphicConnector >> addElementNodeInView: element [
 { #category : #layout }
 TLMorphicConnector >> applyLayoutOf: aTLVisualization on: aCollection [ 
 	aTLVisualization layout on: aCollection
+]
+
+{ #category : #'generation - connection' }
+TLMorphicConnector >> createElementConnection: aTLConnection From: aTLSimpleNode to: anotherTLSimpleNode [
+	| morphicConnection |
+	morphicConnection := aTLConnection asMorphicConnection.
+	morphicConnection
+		connect: (self shapeByDrawable at: aTLSimpleNode) to: (self shapeByDrawable at: anotherTLSimpleNode).
+	
+	self registerShape: morphicConnection forDrawable: aTLConnection.
+	
+	^ morphicConnection
 ]
 
 { #category : #'generation - node' }
