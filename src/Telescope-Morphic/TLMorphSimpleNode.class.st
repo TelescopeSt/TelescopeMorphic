@@ -1,6 +1,8 @@
 Class {
 	#name : #TLMorphSimpleNode,
 	#superclass : #Morph,
+	#traits : 'TLRequiredForConnector',
+	#classTraits : 'TLRequiredForConnector classTrait',
 	#category : #'Telescope-Morphic'
 }
 
@@ -22,7 +24,12 @@ TLMorphSimpleNode >> adaptToStylesheet: aTLStylesheet [
 		
 ]
 
-{ #category : #testing }
-TLMorphSimpleNode >> occupyMaxSpace [
-	^ false
+{ #category : #accessing }
+TLMorphSimpleNode >> children [
+	^ #()
+]
+
+{ #category : #accessing }
+TLMorphSimpleNode >> dimension [
+	^ self extent
 ]

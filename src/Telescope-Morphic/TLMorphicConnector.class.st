@@ -9,6 +9,18 @@ TLMorphicConnector class >> priority [
 	^ 1000
 ]
 
+{ #category : #view }
+TLMorphicConnector >> addElementLegendInView: aTLMorphicConnector [
+	Halt if: [ aTLMorphicConnector ~= self ].
+	self flag: 'TODO'
+]
+
+{ #category : #view }
+TLMorphicConnector >> addElementNodeInView: element [
+	self view
+		addMorph: element
+]
+
 { #category : #layout }
 TLMorphicConnector >> applyLayoutOf: aTLVisualization on: aCollection [ 
 	aTLVisualization layout on: aCollection
@@ -32,6 +44,12 @@ TLMorphicConnector >> createGroup: aTLGroup with: aCollection [
 	^ aCollection
 ]
 
+{ #category : #'generation - legend' }
+TLMorphicConnector >> createLegendFrom: aCollection [ 
+	aCollection ifNotEmpty: [ 
+		self halt: 'TODO' ]
+]
+
 { #category : #opening }
 TLMorphicConnector >> open: aTLVisualization inWindowSized: aPoint titled: aString [ 
 	| morph |
@@ -43,4 +61,14 @@ TLMorphicConnector >> open: aTLVisualization inWindowSized: aPoint titled: aStri
 	
 	morph openInWindowLabeled: aString.
 	^ morph
+]
+
+{ #category : #'updating - legend' }
+TLMorphicConnector >> updateLegend: aTLLegend [ 
+	self flag: 'TODO'
+]
+
+{ #category : #view }
+TLMorphicConnector >> updateViewForVisualization: aTLVisualization [ 
+	self flag: 'TODO'
 ]

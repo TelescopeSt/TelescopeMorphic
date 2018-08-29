@@ -1,6 +1,8 @@
 Class {
 	#name : #TLMorphCompositeNode,
 	#superclass : #Morph,
+	#traits : 'TLRequiredForConnector',
+	#classTraits : 'TLRequiredForConnector classTrait',
 	#category : #'Telescope-Morphic'
 }
 
@@ -16,7 +18,7 @@ TLMorphCompositeNode >> adaptToStylesheet: aTLStylesheet [
 	self shouldBeImplemented
 ]
 
-{ #category : #testing }
-TLMorphCompositeNode >> occupyMaxSpace [
-	^ false
+{ #category : #accessing }
+TLMorphCompositeNode >> children [
+	^ self submorphs
 ]
