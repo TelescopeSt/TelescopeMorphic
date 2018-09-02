@@ -57,8 +57,7 @@ TLMorphicConnector >> createElementNodeFromNode: aTLNode [
 { #category : #'generation - group' }
 TLMorphicConnector >> createGroup: aTLGroup with: aCollection [ 
 	"Not needed here because a group is not displayed in the visu.
-	 Still need to return aCollection."
-	
+	 Still need to return a collection."
 	^ aCollection
 ]
 
