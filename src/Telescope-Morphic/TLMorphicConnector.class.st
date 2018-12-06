@@ -49,6 +49,8 @@ TLMorphicConnector >> createElementNodeFromNode: aTLNode [
 	| morphicNode |
 	morphicNode := aTLNode asMorphicNode.
 	
+	morphicNode modelNode: aTLNode. self flag: #TODO. "This is a hack."
+	
 	self registerShape: morphicNode forDrawable: aTLNode.
 	
 	^ morphicNode

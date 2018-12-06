@@ -1,11 +1,26 @@
 Trait {
 	#name : #TLRequiredForConnector,
+	#instVars : [
+		'modelNode'
+	],
 	#category : #'Telescope-Morphic'
 }
 
 { #category : #testing }
 TLRequiredForConnector >> isNode [
 	^ true
+]
+
+{ #category : #accessing }
+TLRequiredForConnector >> modelNode [
+	self flag: #TODO. "Should not need to hold this node. Issue in Telescope connector."
+	^ modelNode
+]
+
+{ #category : #accessing }
+TLRequiredForConnector >> modelNode: aTLNode [
+	self flag: #TODO. "Should not need to hold this node. Issue in Telescope connector."
+	modelNode := aTLNode
 ]
 
 { #category : #testing }

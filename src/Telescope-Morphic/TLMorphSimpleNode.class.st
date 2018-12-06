@@ -25,7 +25,7 @@ TLMorphSimpleNode >> adaptToStylesheet: aTLStylesheet [
 		borderWidth: aTLStylesheet borderWidth;
 		width: aTLStylesheet width;
 		height: aTLStylesheet height.
-	
+	self halt.
 	self extent: self innerMorph extent
 		
 ]
@@ -38,6 +38,12 @@ TLMorphSimpleNode >> children [
 { #category : #accessing }
 TLMorphSimpleNode >> dimension [
 	^ self extent
+]
+
+{ #category : #hack }
+TLMorphSimpleNode >> incomingAdjacentNodes [
+	self flag: #TODO. "This is because of an issue of the connector. Normally, a GUI element should not hold the model node neither the connector should interact with GUI elements."
+	^ self modelNode incomingAdjacentNodes
 ]
 
 { #category : #initialization }
