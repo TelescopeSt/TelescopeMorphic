@@ -12,19 +12,15 @@ Class {
 { #category : #'instance creation' }
 TLMorphSimpleNode class >> fromSimpleNode: aTLSimpleNode [
 	^ self new
-		adaptToStylesheet: aTLSimpleNode effectiveStyleSheet;
+		adaptToStylesheet: aTLSimpleNode effectiveStyleSheet forSimpleNode: aTLSimpleNode;
 		yourself
 ]
 
 { #category : #adapting }
-TLMorphSimpleNode >> adaptToStylesheet: aTLStylesheet [
+TLMorphSimpleNode >> adaptToStylesheet: aTLStylesheet forSimpleNode: aTLNode [
+	self flag: #todo. "The shape should not be get that way. Check the content of #applyMorphicNodeStyleFor:on: to see how to get it."
 	self innerMorph: aTLStylesheet shape asMorphNode.
-	self innerMorph
-		color: aTLStylesheet backgroundColor;
-		borderColor: aTLStylesheet borderColor;
-		borderWidth: aTLStylesheet borderWidth;
-		width: aTLStylesheet width;
-		height: aTLStylesheet height.
+	aTLStylesheet applyMorphicNodeStyleFor: aTLNode on: self innerMorph.
 	self halt.
 	self extent: self innerMorph extent
 		

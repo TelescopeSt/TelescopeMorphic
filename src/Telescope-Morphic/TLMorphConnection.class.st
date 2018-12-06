@@ -11,14 +11,15 @@ Class {
 { #category : #'instance creation' }
 TLMorphConnection class >> fromConnection: aTLConnection [
 	^ self new
-		adaptToStylesheet: aTLConnection effectiveStyleSheet;
+		adaptToStylesheet: aTLConnection effectiveStyleSheet forConnection: aTLConnection;
 		yourself
 ]
 
 { #category : #adapting }
-TLMorphConnection >> adaptToStylesheet: aTLStylesheet [
-	self flag: 'TODO: manage width, etc...';
-		color: aTLStylesheet color
+TLMorphConnection >> adaptToStylesheet: aTLStylesheet forConnection: aConnection [
+	self flag: 'TODO: manage width, etc...'.
+	self flag: #todo. "Use #obtainValue:forEntity:inNode:"
+	self color: aTLStylesheet color
 ]
 
 { #category : #connecting }
