@@ -5,12 +5,12 @@ TLStyleSheet >> applyMorphicNodeStyleFor: aNode on: aMorph [
 	| nodeLabelPosition shape |
 	self flag: #todo. "Not finished"
 	aMorph
-		color: (self obtainValue: #backgroundColor forEntity: aNode  inNode: aNode);
-		borderColor: (self obtainValue: #borderColor forEntity: aNode  inNode: aNode);
-		borderWidth: (self obtainValue: #borderWidth forEntity: aNode  inNode: aNode);
-		width: (self obtainValue: #width forEntity: aNode  inNode: aNode);
-		height: (self obtainValue: #height forEntity: aNode  inNode: aNode).
-	"nodeLabelPosition := TLPosition for: (self obtainValue: #nodeLabelPosition forEntity: aNode  inNode: aNode)."
+		color: (self obtainValue: #backgroundColor forEntity: aNode entity inNode: aNode);
+		borderColor: (self obtainValue: #borderColor forEntity: aNode entity inNode: aNode);
+		borderWidth: (self obtainValue: #borderWidth forEntity: aNode entity inNode: aNode);
+		width: (self obtainValue: #width forEntity: aNode entity inNode: aNode);
+		height: (self obtainValue: #height forEntity: aNode entity inNode: aNode).
+	"nodeLabelPosition := TLPosition for: (self obtainValue: #nodeLabelPosition forEntity: aNode entity inNode: aNode)."
 
 			
 			"(#'border-opacity' -> [ :t | [ :e :n | (t obtainValue: #borderColor forEntity: e inNode: n) alpha ] ]).

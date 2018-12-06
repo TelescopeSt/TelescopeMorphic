@@ -21,7 +21,7 @@ TLMorphSimpleNode >> adaptToStylesheet: aTLStylesheet forSimpleNode: aTLNode [
 	self flag: #todo. "The shape should not be get that way. Check the content of #applyMorphicNodeStyleFor:on: to see how to get it."
 	self innerMorph: aTLStylesheet shape asMorphNode.
 	aTLStylesheet applyMorphicNodeStyleFor: aTLNode on: self innerMorph.
-	self halt.
+	"self halt."
 	self extent: self innerMorph extent
 		
 ]
