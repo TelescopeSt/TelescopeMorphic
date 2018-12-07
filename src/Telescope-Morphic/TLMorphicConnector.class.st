@@ -69,6 +69,16 @@ TLMorphicConnector >> createLegendFrom: aCollection [
 		self halt: 'TODO' ]
 ]
 
+{ #category : #'generation - interaction' }
+TLMorphicConnector >> generateClickInteraction: aTLClickInteraction onDrawable: aTLSimpleNode targetingDrawable: aTLSimpleNode3 [ 
+	self flag: #todo
+]
+
+{ #category : #'generation - interaction' }
+TLMorphicConnector >> generateMouseOverInteraction: aTLMouseOverInteraction onDrawable: aTLSimpleNode targetingDrawable: aTLSimpleNode3 [ 
+	self flag: #todo
+]
+
 { #category : #opening }
 TLMorphicConnector >> open: aTLVisualization inWindowSized: aPoint titled: aString [ 
 	| morph |
