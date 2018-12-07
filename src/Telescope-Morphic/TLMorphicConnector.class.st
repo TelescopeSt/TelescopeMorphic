@@ -65,8 +65,7 @@ TLMorphicConnector >> createGroup: aTLGroup with: aCollection [
 
 { #category : #'generation - legend' }
 TLMorphicConnector >> createLegendFrom: aCollection [ 
-	aCollection ifNotEmpty: [ 
-		self halt: 'TODO' ]
+	aCollection ifNotEmpty: [ self flag: #todo ]
 ]
 
 { #category : #'generation - interaction' }
@@ -77,6 +76,16 @@ TLMorphicConnector >> generateClickInteraction: aTLClickInteraction onDrawable: 
 { #category : #'generation - interaction' }
 TLMorphicConnector >> generateMouseOverInteraction: aTLMouseOverInteraction onDrawable: aTLSimpleNode targetingDrawable: aTLSimpleNode3 [ 
 	self flag: #todo
+]
+
+{ #category : #'generation-legendEntry' }
+TLMorphicConnector >> generateNodeShapeLegendEntry: aTLNodeShapeLegendEntry [ 
+	self flag: #todo
+]
+
+{ #category : #accessing }
+TLMorphicConnector >> nodesShapesAvailableForConnector [
+	^ TLSimpleShape allSubclasses select: [ :class | [ class asMorphNode. true ] on: TLNotSupportedFunctionalityException do: [ false ] ]
 ]
 
 { #category : #opening }
