@@ -8,8 +8,7 @@ TLStyleSheet >> applyMorphicNodeStyleFor: aNode on: aMorph [
 		color: (self obtainValue: #backgroundColor forEntity: aNode entity inNode: aNode);
 		borderColor: (self obtainValue: #borderColor forEntity: aNode entity inNode: aNode);
 		borderWidth: (self obtainValue: #borderWidth forEntity: aNode entity inNode: aNode);
-		width: (self obtainValue: #width forEntity: aNode entity inNode: aNode);
-		height: (self obtainValue: #height forEntity: aNode entity inNode: aNode).
+		extent: (self obtainValue: #width forEntity: aNode entity inNode: aNode) @ (self obtainValue: #height forEntity: aNode entity inNode: aNode).
 	"nodeLabelPosition := TLPosition for: (self obtainValue: #nodeLabelPosition forEntity: aNode entity inNode: aNode)."
 
 			

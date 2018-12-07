@@ -57,6 +57,5 @@ TLMorphSimpleNode >> innerMorph [
 TLMorphSimpleNode >> innerMorph: anObject [
 	self innerMorph ifNotNil: [ self removeMorph: self innerMorph ].
 	innerMorph := anObject.
-	self addMorph: self innerMorph.
-	self innerMorph position: self position
+	self addMorph: self innerMorph
 ]
