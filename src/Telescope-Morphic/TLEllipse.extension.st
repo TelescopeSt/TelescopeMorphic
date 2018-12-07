@@ -2,12 +2,12 @@ Extension { #name : #TLEllipse }
 
 { #category : #'*Telescope-Morphic' }
 TLEllipse class >> asMorphNode [
-	^ PolygonMorph new
+	^ (TLPolygonMorph
+		initializeVertices:
+		{(-1 @ 0).
+	(0 @ 1).
+	(1 @ 0).
+	(0 @ -1)})
 		beSmoothCurve;
-		setVertices:
-			{(-1 @ 0).
-			(0 @ 1).
-			(1 @ 0).
-			(0 @ -1)};
 		yourself
 ]

@@ -2,9 +2,8 @@ Extension { #name : #TLSimpleShape }
 
 { #category : #'*Telescope-Morphic' }
 TLSimpleShape class >> asMorphNode [
-	[ ^ PolygonMorph new
+	[ ^ (TLPolygonMorph initializeVertices: self morphicPolygonPoints) 
 		beStraightSegments;
-		setVertices: self morphicPolygonPoints;
 		yourself ]
 		on: SubclassResponsibility
 		do: [ TLNotSupportedFunctionalityException signal: 'This shape is not available for nodes.' ]
