@@ -22,6 +22,25 @@ TLMorphConnection >> adaptToStylesheet: aTLStylesheet forConnection: aConnection
 	self color: aTLStylesheet color
 ]
 
+{ #category : #drawing }
+TLMorphConnection >> asAthensLinePathOn: anAthensCanvas [
+	^ anAthensCanvas
+		createPath: [ :builder | 
+			builder absolute.
+			builder moveTo: self fromMorph center.
+			builder lineTo: self toMorph center.
+			builder close.
+			builder ]
+]
+
+{ #category : #drawing }
+TLMorphConnection >> asAthensPathOn: anAthensCanvas [
+	self flag: #todo.
+	^ "self isCurve
+		ifTrue: [ self asAthensCurvedPathOn: anAthensCanvas ]
+		ifFalse: [" self asAthensLinePathOn: anAthensCanvas "]"
+]
+
 { #category : #connecting }
 TLMorphConnection >> connect: aTLMorphSimpleNode to: aTLMorphSimpleNode2 [ 
 	self
@@ -33,6 +52,17 @@ TLMorphConnection >> connect: aTLMorphSimpleNode to: aTLMorphSimpleNode2 [
 TLMorphConnection >> drawOn: aCanvas [
 	aCanvas
 		line: self fromMorph center to: self toMorph center color: self color
+]
+
+{ #category : #drawing }
+TLMorphConnection >> drawOnAthensCanvas: anAthensCanvas [
+	| shape stroke |
+	shape := self asAthensPathOn: anAthensCanvas.
+	stroke := anAthensCanvas setStrokePaint: Color black.
+	stroke width: "border width" 2.
+	"self dashedBorder notNil
+		ifTrue: [ self setDashOnStroke: stroke ]."
+	anAthensCanvas drawShape: shape.
 ]
 
 { #category : #accessing }

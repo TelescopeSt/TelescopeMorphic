@@ -19,11 +19,14 @@ TLMorphSimpleNode class >> fromSimpleNode: aTLSimpleNode [
 { #category : #adapting }
 TLMorphSimpleNode >> adaptToStylesheet: aTLStylesheet forSimpleNode: aTLNode [
 	self flag: #todo. "The shape should not be get that way. Check the content of #applyMorphicNodeStyleFor:on: to see how to get it."
-	self innerMorph: aTLStylesheet shape asMorphNode.
+	self innerMorph: (aTLStylesheet obtainValue: #shape forEntity: aTLNode entity inNode: aTLNode )asMorphNode.
 	aTLStylesheet applyMorphicNodeStyleFor: aTLNode on: self innerMorph.
 	"self halt."
-	self extent: self innerMorph extent
-		
+	self extent: self innerMorph extent.
+	
+	self flag: #todo. "I'm not really found of this hack to re-center both morphs after we apply the style. Maybe there is something better to do?"
+	self removeMorph: self innerMorph.
+	self addMorphCentered: self innerMorph
 ]
 
 { #category : #accessing }
@@ -57,5 +60,5 @@ TLMorphSimpleNode >> innerMorph [
 TLMorphSimpleNode >> innerMorph: anObject [
 	self innerMorph ifNotNil: [ self removeMorph: self innerMorph ].
 	innerMorph := anObject.
-	self addMorph: self innerMorph
+	self addMorphCentered: self innerMorph
 ]

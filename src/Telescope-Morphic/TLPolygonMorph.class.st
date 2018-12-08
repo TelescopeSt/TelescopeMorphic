@@ -21,42 +21,37 @@ TLPolygonMorph class >> initializeVertices: aCollection [
 		yourself
 ]
 
-{ #category : #drawing }
+{ #category : #athens }
 TLPolygonMorph >> asAthensCurvedPathOn: anAthensCanvas [
 	| points |
 	points := self computeCurvedSegmentCtrlPoints.
 	^ anAthensCanvas
 		createPath: [ :builder | 
-			self vertices notEmpty
-				ifTrue: [ 
-					| prior | "points contains {ctrl1 vertice ctrl2}"
-					prior := points first.
-					builder absolute.
-					builder moveTo: prior second.
-					points allButFirst
-						do: [ :p | 
-							builder curveVia: prior third and: p first to: p second.
-							prior := p ].
-					
-							builder curveVia: prior third and: points first first to: points first second.
-							builder close ].
-			builder ]
-]
-
-{ #category : #drawing }
-TLPolygonMorph >> asAthensLinePathOn: anAthensCanvas [
-	^ anAthensCanvas
-		createPath: [ :builder | 
-			vertices notEmpty
-				ifTrue: [ 
-					builder absolute.
-					builder moveTo: vertices first.
-					vertices allButFirstDo: [ :p | builder lineTo: p ] ].
+			| prior |
+			prior := points first.
+			builder absolute.
+			builder moveTo: prior second.
+			points allButFirst
+				do: [ :p | 
+					builder curveVia: prior third and: p first to: p second.
+					prior := p ].
+			builder curveVia: prior third and: points first first to: points first second.
 			builder close.
 			builder ]
 ]
 
-{ #category : #drawing }
+{ #category : #athens }
+TLPolygonMorph >> asAthensLinePathOn: anAthensCanvas [
+	^ anAthensCanvas
+		createPath: [ :builder | 
+			builder absolute.
+			builder moveTo: vertices first.
+			vertices allButFirstDo: [ :p | builder lineTo: p ].
+			builder close.
+			builder ]
+]
+
+{ #category : #athens }
 TLPolygonMorph >> asAthensPathOn: anAthensCanvas [
 	^ self isCurve
 		ifTrue: [ self asAthensCurvedPathOn: anAthensCanvas ]
@@ -407,7 +402,7 @@ TLPolygonMorph >> drawOn: aCanvas [
 				borderColor: self borderColor ]
 ]
 
-{ #category : #drawing }
+{ #category : #athens }
 TLPolygonMorph >> drawOnAthensCanvas: anAthensCanvas [
 	| border shape stroke |
 	border := self borderStyle.
@@ -580,7 +575,7 @@ TLPolygonMorph >> segmentedSlopesOf: knots [
 	^ knots collectWithIndex: [:x :i | (knots atWrap: i + 1) - x]
 ]
 
-{ #category : #drawing }
+{ #category : #athens }
 TLPolygonMorph >> setDashOnStroke: anAthensStrokePaint [
 	| d commonOffset |
 	d := self dashedBorder.
@@ -600,7 +595,7 @@ TLPolygonMorph >> setRotationCenterFrom: aPoint [
 	self setProperty: #referencePosition toValue: aPoint
 ]
 
-{ #category : #drawing }
+{ #category : #athens }
 TLPolygonMorph >> setSecondColorDashOnStroke: anAthensStrokePaint [
 	| d c commonOffset |
 	d := self dashedBorder.
