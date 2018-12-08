@@ -21,6 +21,48 @@ TLPolygonMorph class >> initializeVertices: aCollection [
 		yourself
 ]
 
+{ #category : #drawing }
+TLPolygonMorph >> asAthensCurvedPathOn: anAthensCanvas [
+	| points |
+	points := self computeCurvedSegmentCtrlPoints.
+	^ anAthensCanvas
+		createPath: [ :builder | 
+			self vertices notEmpty
+				ifTrue: [ 
+					| prior | "points contains {ctrl1 vertice ctrl2}"
+					prior := points first.
+					builder absolute.
+					builder moveTo: prior second.
+					points allButFirst
+						do: [ :p | 
+							builder curveVia: prior third and: p first to: p second.
+							prior := p ].
+					
+							builder curveVia: prior third and: points first first to: points first second.
+							builder close ].
+			builder ]
+]
+
+{ #category : #drawing }
+TLPolygonMorph >> asAthensLinePathOn: anAthensCanvas [
+	^ anAthensCanvas
+		createPath: [ :builder | 
+			vertices notEmpty
+				ifTrue: [ 
+					builder absolute.
+					builder moveTo: vertices first.
+					vertices allButFirstDo: [ :p | builder lineTo: p ] ].
+			builder close.
+			builder ]
+]
+
+{ #category : #drawing }
+TLPolygonMorph >> asAthensPathOn: anAthensCanvas [
+	^ self isCurve
+		ifTrue: [ self asAthensCurvedPathOn: anAthensCanvas ]
+		ifFalse: [ self asAthensLinePathOn: anAthensCanvas ]
+]
+
 { #category : #initialization }
 TLPolygonMorph >> beSmoothCurve [
 	smoothCurve ifTrue: [ ^ self ].
@@ -187,6 +229,39 @@ TLPolygonMorph >> computeBounds [
 
 ]
 
+{ #category : #drawing }
+TLPolygonMorph >> computeCurvedSegmentCtrlPoints [
+	"compute control points for the curved polygon.
+For every vertice C take the two edges L and R. Compute the line T between the midpoints of L and R.
+Use T is the tangent on the C. T is divided by the C with the same ration as L/R.
+The start and end point of T defines the controlpoint c1 and c2
+for the current vertice C.
+"
+
+	| ctrls |
+	ctrls := (1 to: vertices size)
+		collect: [ :i | 
+			| prior current next lenpc lencn ctrl1 ctrl2 tangent |
+			prior := vertices atWrap: i - 1.
+			current := vertices atWrap: i.
+			next := vertices atWrap: i + 1.
+			tangent := (next - prior) / 2.
+			lenpc := current distanceTo: prior.
+			lencn := next dist: current.
+			lenpc = 0 ifTrue:[
+				ctrl1 := prior]
+			ifFalse:[	ctrl1 := current - (tangent / (1 + (lencn / lenpc)))].
+				lencn = 0 ifTrue:[
+					ctrl2 := next]
+				ifFalse:[
+			ctrl2 := current + (tangent / (1 + (lenpc / lencn)))].
+		"collect ctrl1 current and ctrl2"
+			{(ctrl1 asFloatPoint).
+			current.
+			(ctrl2 asFloatPoint)} ].
+	^ ctrls
+]
+
 { #category : #smoothing }
 TLPolygonMorph >> computeNextToEndPoints [
 	| pointAfterFirst pointBeforeLast |
@@ -266,22 +341,8 @@ TLPolygonMorph >> dashedBorder: dashSpec [
 ]
 
 { #category : #drawing }
-TLPolygonMorph >> drawBorderOn: aCanvas [
-	"Display my border on the canvas."
-
-	"NOTE: Much of this code is also copied in  
-	drawDashedBorderOn:  
-	(should be factored)"
-
-	| style |
-	borderDashSpec ifNotNil: [ ^ self drawDashedBorderOn: aCanvas ].
-	style := self borderStyle.
-	self lineSegmentsDo: [ :p1 :p2 | style drawLineFrom: p1 asIntegerPoint to: p2 asIntegerPoint on: aCanvas ]
-]
-
-{ #category : #drawing }
 TLPolygonMorph >> drawClippedBorderOn: aCanvas [
-	aCanvas clipBy: self bounds during: [ :cc | self drawBorderOn: cc ]
+	aCanvas clipBy: self bounds during: [ :cc | self drawDashedBorderOn: cc ]
 ]
 
 { #category : #drawing }
@@ -333,13 +394,34 @@ TLPolygonMorph >> drawDropShadowOn: aCanvas [
 ]
 
 { #category : #drawing }
-TLPolygonMorph >> drawOn: aCanvas [ 
+TLPolygonMorph >> drawOn: aCanvas [
 	"Display the receiver, a spline curve, approximated by straight 
 	line segments."
-	
-	aCanvas drawPolygon: self getVertices fillStyle: self fillStyle.
+	borderDashSpec
+		ifNotNil: [ aCanvas drawPolygon: self getVertices fillStyle: self fillStyle.
+			self drawClippedBorderOn: aCanvas ]
+		ifNil: [aCanvas
+				drawPolygon: self getVertices
+				fillStyle: self fillStyle
+				borderWidth: self borderWidth
+				borderColor: self borderColor ]
+]
 
-	self drawClippedBorderOn: aCanvas
+{ #category : #drawing }
+TLPolygonMorph >> drawOnAthensCanvas: anAthensCanvas [
+	| border shape stroke |
+	border := self borderStyle.
+	shape := self asAthensPathOn: anAthensCanvas.
+	anAthensCanvas setPaint: self fillStyle.
+	anAthensCanvas drawShape: shape.
+	stroke := anAthensCanvas setStrokePaint: border color.
+	stroke width: border width.
+	self dashedBorder notNil
+		ifTrue: [ self setDashOnStroke: stroke ].
+	anAthensCanvas drawShape: shape.
+	self hasTwoColorDash
+		ifTrue: [ self setSecondColorDashOnStroke: stroke.
+			anAthensCanvas drawShape: shape ].
 ]
 
 { #category : #geometry }
@@ -355,6 +437,13 @@ TLPolygonMorph >> getVertices [
 	"For curves, enumerate the full set of interpolated points"
 	^ Array streamContents:
 		[:s | self lineSegmentsDo: [:pt1 :pt2 | s nextPut: pt1]]
+]
+
+{ #category : #drawing }
+TLPolygonMorph >> hasTwoColorDash [
+	" return true if the dash spec has another color"
+
+	^ self dashedBorder notNil and: [ self dashedBorder size > 2 ]
 ]
 
 { #category : #initialization }
@@ -491,10 +580,40 @@ TLPolygonMorph >> segmentedSlopesOf: knots [
 	^ knots collectWithIndex: [:x :i | (knots atWrap: i + 1) - x]
 ]
 
+{ #category : #drawing }
+TLPolygonMorph >> setDashOnStroke: anAthensStrokePaint [
+	| d commonOffset |
+	d := self dashedBorder.
+	commonOffset := d size > 3
+		ifTrue: [ d fourth ]
+		ifFalse: [ 0 ].
+	anAthensStrokePaint
+		dashes:
+			{(d first).
+			(d second)}
+		offset: commonOffset
+]
+
 { #category : #menu }
 TLPolygonMorph >> setRotationCenterFrom: aPoint [
 	"Polygons store their referencePosition."
 	self setProperty: #referencePosition toValue: aPoint
+]
+
+{ #category : #drawing }
+TLPolygonMorph >> setSecondColorDashOnStroke: anAthensStrokePaint [
+	| d c commonOffset |
+	d := self dashedBorder.
+	c := d third.
+	commonOffset := d size > 3
+		ifTrue: [ d fourth ]
+		ifFalse: [ 0 ].
+	anAthensStrokePaint fillPaint: c.
+	anAthensStrokePaint
+		dashes:
+			{(d second).
+			(d first)}
+		offset: commonOffset + d second
 ]
 
 { #category : #private }

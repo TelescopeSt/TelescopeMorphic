@@ -90,14 +90,17 @@ TLMorphicConnector >> nodesShapesAvailableForConnector [
 
 { #category : #opening }
 TLMorphicConnector >> open: aTLVisualization inWindowSized: aPoint titled: aString [ 
-	| morph |
+	| morph window |
 	morph := TLMorphVisualization new.
-	morph extent: aPoint.
 	
 	self view: morph.
 	self generateVisualization: aTLVisualization.
 	
-	morph openInWindowLabeled: aString.
+	window := TLAthensSceneView new
+		scene: (AthensMorphScene new morph: morph);
+		openInWindowLabeled: aString.
+		
+	window extent: aPoint.
 	^ morph
 ]
 
