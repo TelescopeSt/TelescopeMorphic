@@ -34,6 +34,11 @@ TLMorphSimpleNode >> children [
 	^ #()
 ]
 
+{ #category : #'geometry testing' }
+TLMorphSimpleNode >> containsPoint: aPoint [
+	^ self innerMorph containsPoint: aPoint
+]
+
 { #category : #accessing }
 TLMorphSimpleNode >> dimension [
 	^ self extent

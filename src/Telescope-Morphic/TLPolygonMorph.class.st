@@ -4,8 +4,6 @@ Class {
 	#instVars : [
 		'baseVertices',
 		'vertices',
-		'smoothCurve',
-		'curveState',
 		'borderDashSpec',
 		'borderForm'
 	],
@@ -20,26 +18,7 @@ TLPolygonMorph class >> initializeVertices: aCollection [
 ]
 
 { #category : #athens }
-TLPolygonMorph >> asAthensCurvedPathOn: anAthensCanvas [
-	| points |
-	points := self computeCurvedSegmentCtrlPoints.
-	^ anAthensCanvas
-		createPath: [ :builder | 
-			| prior |
-			prior := points first.
-			builder absolute.
-			builder moveTo: prior second.
-			points allButFirst
-				do: [ :p | 
-					builder curveVia: prior third and: p first to: p second.
-					prior := p ].
-			builder curveVia: prior third and: points first first to: points first second.
-			builder close.
-			builder ]
-]
-
-{ #category : #athens }
-TLPolygonMorph >> asAthensLinePathOn: anAthensCanvas [
+TLPolygonMorph >> asAthensPathOn: anAthensCanvas [
 	^ anAthensCanvas
 		createPath: [ :builder | 
 			builder absolute.
@@ -47,29 +26,6 @@ TLPolygonMorph >> asAthensLinePathOn: anAthensCanvas [
 			vertices allButFirstDo: [ :p | builder lineTo: p ].
 			builder close.
 			builder ]
-]
-
-{ #category : #athens }
-TLPolygonMorph >> asAthensPathOn: anAthensCanvas [
-	^ self isCurve
-		ifTrue: [ self asAthensCurvedPathOn: anAthensCanvas ]
-		ifFalse: [ self asAthensLinePathOn: anAthensCanvas ]
-]
-
-{ #category : #initialization }
-TLPolygonMorph >> beSmoothCurve [
-	smoothCurve ifTrue: [ ^ self ].
-
-	smoothCurve := true.
-	self computeBounds
-]
-
-{ #category : #initialization }
-TLPolygonMorph >> beStraightSegments [
-	smoothCurve ifTrue: [ ^ self ].
-
-	smoothCurve := false.
-	self computeBounds
 ]
 
 { #category : #dashes }
@@ -95,123 +51,13 @@ TLPolygonMorph >> bounds: newBounds [
 		position: newBounds topLeft
 ]
 
-{ #category : #'cubic support' }
-TLPolygonMorph >> changeInSlopes: slopes of: verts [ 
-	"A message to knots of a spline. Returns an array with the 3rd cubic coeff."
-	"The last nth item is correct iff this is a closed cubic.
-	Presumably that is the only time we care.
-	We always return the same sized array as self."
-	| n slopeChanges |
-	n := verts size.
-	n = slopes size ifFalse: [^ self error: 'vertices and slopes differ in number'].
-	slopeChanges := Array new: n.
-	1 to: n do: [:i | slopeChanges at: i put: (verts atWrap: i + 1)
-					- (verts at: i) * 3 - ((slopes at: i) * 2)
-					- (slopes atWrap: i + 1)].
-	^ slopeChanges
-]
-
-{ #category : #'cubic support' }
-TLPolygonMorph >> changeOfChangesInSlopes: slopes of: verts [
-	"A message to knots of a spline. Returns an array with the 4rd 
-	cubic coeff."
-	"The last nth item is correct iff this is a closed cubic. 
-	Presumably that is the only time we care. 
-	We always return the same sized array as self."
-	| n changes |
-	n := verts size.
-	n = slopes size ifFalse: [^ self error: 'vertices and slopes differ in number'].
-	changes := Array new: n.
-	1 to: n do: [:i | changes at: i put: (verts at: i)
-					- (verts atWrap: i + 1) * 2
-					+ (slopes at: i)
-					+ (slopes atWrap: i + 1)].
-	^ changes
-]
-
-{ #category : #'cubic support' }
-TLPolygonMorph >> closedCubicSlopesOf: knots [ 
-	"Sent to knots returns the slopes of a closed cubic spline.
-	From the same set of java sources as naturalCubic. This is a smalltalk  
-	transliteration of the java code."
-	"from java code NatCubicClosed extends NatCubic  
-	solves for the set of equations for all knots: 
-	b1+4*b2+b3=3*(a3-a1)
-	where a1 is (knots atWrap: index + 1) etc.
-	and the b's are the slopes .
-	by decomposing the matrix into upper triangular and lower matrices  
-	and then back sustitution. See Spath 'Spline Algorithms for Curves  
-	and Surfaces' pp 19--21. The D[i] are the derivatives at the knots.  
-	"
-	
-	| v w x y z n1  D F G H |
-	n1 := knots size.
-	n1 < 3
-		ifTrue: [self error: 'Less than 3 points makes a poor curve'].
-	v := Array new: n1.
-	w := Array new: n1.
-	y := Array new: n1.
-	
-	D := Array new: n1.
-	x := knots.
-	z := 1.0 / 4.0.
-	v at: 2 put: z.
-	w at: 2 put: z.
-	y at: 1 put: z * 3.0 * ((x at: 2) - (x at: n1)).
-	H := 4.0.
-	F := 3 * ((x at: 1) - (x at: n1 - 1)).
-	G := 1.
-	2 to: n1 - 1 do: [:k | 
-			z := 1.0 / (4.0 - (v at: k)).
-			v at: k + 1 put: z.
-			w at: k + 1 put: z negated
-					* (w at: k).
-			y at: k put: z * (3.0 * ((x at: k + 1) - (x at: k - 1)) - (y at: k - 1)).
-			H := H - (G * (w at: k)).
-			F := F - (G * (y at: k - 1)).
-			G := (v at: k) negated * G].
-	H := H - (G + 1 * ((v at: n1) + (w at: n1))).
-	y at: n1 put: F - (G + 1 * (y at: n1 - 1)).
-	D at: n1 put: (y at: n1) / H.
-	D at: n1 - 1 put: (y at: n1 - 1) - ((v at: n1) + (w at: n1) * (D at: n1)).
-	(1 to: n1 - 2)
-		reverseDo: [:k | D at: k put: (y at: k)
-					- ((v at: k + 1) * (D at: k + 1)) - ((w at: k + 1) * (D at: n1))].
-	^ D 
-
-
-]
-
-{ #category : #smoothing }
-TLPolygonMorph >> coefficients [
-	| verts coefficients vertXs slopeXs vertYs slopeYs bestSegments |
-	curveState ifNotNil: [ ^ curveState at: 1 ].
-	verts := self vertices.
-	coefficients := {(vertXs := verts collect: [ :p | p x asFloat ]).
-	(slopeXs := self slopes: vertXs).
-	(self changeInSlopes: slopeXs of: vertXs).
-	(self changeOfChangesInSlopes: slopeXs of: vertXs).
-	(vertYs := verts collect: [ :p | p y asFloat ]).
-	(slopeYs := self slopes: vertYs).
-	(self changeInSlopes: slopeYs of: vertYs).
-	(self changeOfChangesInSlopes: slopeYs of: vertYs).
-	(Array new: verts size withAll: 12)}.
-	bestSegments := (1 to: verts size) collect: [ :i | (self transform: coefficients toCubicPointPolynomialAt: i) bestSegments ].
-	coefficients at: 9 put: bestSegments.
-	curveState := {coefficients.
-	nil.
-	nil}.
-	self computeNextToEndPoints.
-	^ coefficients
-]
-
 { #category : #private }
 TLPolygonMorph >> computeBounds [
 	| oldBounds delta |
 	self changed.
 	oldBounds := bounds.
 	self releaseCachedState.
-	bounds := self curveBounds expanded.
+	bounds := ((Rectangle encompassing: self vertices) expandBy: borderWidth * 0.5) expanded.
 
 	"since we are directly updating bounds, see if any ordinary submorphs exist and move them accordingly"
 	(oldBounds notNil and: [(delta := bounds origin - oldBounds origin) ~= (0@0)]) ifTrue: [
@@ -222,88 +68,16 @@ TLPolygonMorph >> computeBounds [
 
 ]
 
-{ #category : #drawing }
-TLPolygonMorph >> computeCurvedSegmentCtrlPoints [
-	"compute control points for the curved polygon.
-For every vertice C take the two edges L and R. Compute the line T between the midpoints of L and R.
-Use T is the tangent on the C. T is divided by the C with the same ration as L/R.
-The start and end point of T defines the controlpoint c1 and c2
-for the current vertice C.
-"
+{ #category : #accessing }
+TLPolygonMorph >> containsPoint: aPoint [
+	(super containsPoint: aPoint) ifFalse: [^ false].
 
-	| ctrls |
-	ctrls := (1 to: vertices size)
-		collect: [ :i | 
-			| prior current next lenpc lencn ctrl1 ctrl2 tangent |
-			prior := vertices atWrap: i - 1.
-			current := vertices atWrap: i.
-			next := vertices atWrap: i + 1.
-			tangent := (next - prior) / 2.
-			lenpc := current distanceTo: prior.
-			lencn := next dist: current.
-			lenpc = 0 ifTrue:[
-				ctrl1 := prior]
-			ifFalse:[	ctrl1 := current - (tangent / (1 + (lencn / lenpc)))].
-				lencn = 0 ifTrue:[
-					ctrl2 := next]
-				ifFalse:[
-			ctrl2 := current + (tangent / (1 + (lenpc / lencn)))].
-		"collect ctrl1 current and ctrl2"
-			{(ctrl1 asFloatPoint).
-			current.
-			(ctrl2 asFloatPoint)} ].
-	^ ctrls
-]
-
-{ #category : #smoothing }
-TLPolygonMorph >> computeNextToEndPoints [
-	| pointAfterFirst pointBeforeLast |
-	pointAfterFirst := nil.
-	self lineSegmentsDo: 
-			[:p1 :p2 | 
-			pointAfterFirst ifNil: [pointAfterFirst := p2 asIntegerPoint].
-			pointBeforeLast := p1 asIntegerPoint].
-	curveState at: 2 put: pointAfterFirst.
-	curveState at: 3 put: pointBeforeLast
+	^ (Polygon vertices: vertices) containsPoint: aPoint 
 ]
 
 { #category : #accessing }
 TLPolygonMorph >> couldHaveRoundedCorners [
 	^ false
-]
-
-{ #category : #private }
-TLPolygonMorph >> curveBounds [
-	"Compute the bounds from actual curve traversal, with 
-	leeway for borderWidth. 
-	Also note the next-to-first and next-to-last points for arrow 
-	directions."
-	"wiz - to avoid roundoff errors we return unrounded curvebounds."
-	"we expect our receiver to take responsibility for approriate rounding adjustment."
-	"hint: this is most likely 'self curveBounds expanded' "
-	| pointAfterFirst pointBeforeLast  oX oY cX cY |
-	self isCurve
-		ifFalse: [^ (Rectangle encompassing: self vertices)
-				expandBy: borderWidth * 0.5 ].
-	curveState := nil.
-	"Force recomputation"
-	"curveBounds := vertices first corner: vertices last."
-	pointAfterFirst := nil.
-	self
-		lineSegmentsDo: [:p1 :p2 | 
-			pointAfterFirst isNil
-				ifTrue: [pointAfterFirst := p2 floor .
-					oX := cX := p1 x.
-					oY := cY := p1 y. ].
-			"curveBounds := curveBounds encompass: p2 ."
-			oX:= oX min: p2 x.
-			cX := cX max: p2 x.
-			oY := oY min: p2 y.
-			cY := cY max: p2 y.
-			pointBeforeLast := p1 floor ].
-	curveState at: 2 put: pointAfterFirst.
-	curveState at: 3 put: pointBeforeLast.
-	^ ( oX @ oY corner: cX @ cY )  expandBy: borderWidth * 0.5 
 ]
 
 { #category : #dashes }
@@ -384,7 +158,7 @@ TLPolygonMorph >> drawDashedBorderOn: aCanvas [
 TLPolygonMorph >> drawDropShadowOn: aCanvas [ 
 	"Display the receiver, a spline curve, approximated by straight line segments."
 	
-	aCanvas drawPolygon: self getVertices fillStyle: self shadowColor.
+	aCanvas drawPolygon: self vertices fillStyle: self shadowColor.
 ]
 
 { #category : #drawing }
@@ -392,10 +166,10 @@ TLPolygonMorph >> drawOn: aCanvas [
 	"Display the receiver, a spline curve, approximated by straight 
 	line segments."
 	borderDashSpec
-		ifNotNil: [ aCanvas drawPolygon: self getVertices fillStyle: self fillStyle.
+		ifNotNil: [ aCanvas drawPolygon: self vertices fillStyle: self fillStyle.
 			self drawClippedBorderOn: aCanvas ]
 		ifNil: [aCanvas
-				drawPolygon: self getVertices
+				drawPolygon: self vertices
 				fillStyle: self fillStyle
 				borderWidth: self borderWidth
 				borderColor: self borderColor ]
@@ -415,24 +189,24 @@ TLPolygonMorph >> drawOnAthensCanvas: anAthensCanvas [
 
 { #category : #geometry }
 TLPolygonMorph >> extent: newExtent [
-	self setVertices: (baseVertices collect: [ :point | point * newExtent ])
-]
+	"The vertices will be always be in a encompassing square from -1@-1 to 1@1. 
+	The extent will be computed from the vertices. To get the wanted extent we need to multiply it by the size and dive it by two. 
+	
+	For example the base vertices of a square will be: {(-1 @ -1). (1 @ -1). (1 @ 1). (-1 @ 1)}
+	
+	To get a width and height of 40 we first need to multiply the vertices by 40.
+	
+	We will obtain {(-40 @ -40). (40 @ -40). (40 @ 40). (-40 @ 40)}
+	
+	Then we need to divide by two because if we do not do that, we will have a width and height that is the double of the expected size."
 
-{ #category : #private }
-TLPolygonMorph >> getVertices [
-
-	smoothCurve ifFalse: [^ self vertices].
-
-	"For curves, enumerate the full set of interpolated points"
-	^ Array streamContents:
-		[:s | self lineSegmentsDo: [:pt1 :pt2 | s nextPut: pt1]]
+	self setVertices: (baseVertices collect: [ :point | point * newExtent / 2 ])
 ]
 
 { #category : #initialization }
 TLPolygonMorph >> initialize [
 	super initialize.
 	baseVertices := vertices := (Array with: 5 @ 0 with: 20 @ 10 with: 0 @ 20).
-	smoothCurve := false.
 	self computeBounds
 ]
 
@@ -449,62 +223,23 @@ TLPolygonMorph >> isAnimated [
 	^ borderDashSpec size = 5 and: [(borderDashSpec fifth) > 0]
 ]
 
-{ #category : #testing }
-TLPolygonMorph >> isCurve [
-	^ smoothCurve
-]
-
 { #category : #smoothing }
-TLPolygonMorph >> lineSegmentsDo: endPointsBlock [ 
+TLPolygonMorph >> lineSegmentsDo: endPointsBlock [
 	"Emit a sequence of segment endpoints into endPointsBlock."
-	"Unlike the method this one replaces we expect the curve 
-	coefficents not the dirivatives"
-	"Also unlike the replaced method the smooth closed curve
-	does 
-	not need an extra vertex. 
-	We take care of the extra endpoint here. Just like for 
-	segmented curves."
-	| cs x y beginPoint |
-	self isCurve
-		ifFalse: [beginPoint := nil.
-			self vertices
-				do: [:vert | 
-					beginPoint
-						ifNotNil: [endPointsBlock value: beginPoint value: vert].
-					beginPoint := vert].
-			endPointsBlock value: beginPoint value: self vertices first.
-			^ self].
-	"For curves we include all the interpolated sub segments."
-	"self assert: [(vertices size > 2 )].	"
-	cs := self coefficients.
-	beginPoint := (x := cs first first) @ (y := cs fifth first).
-	1 to: cs first size do: [:i | | t n x3 y3 x1 endPoint x2 y1 y2 | 
-			"taylor series coefficients"
-			x1 := cs second at: i.
-			y1 := cs sixth at: i.
-			x2 := cs third at: i.
-			y2 := cs seventh at: i.
-			x3 := cs fourth at: i.
-			y3 := cs eighth at: i.
-			n := cs ninth at: i.
-		
-			1
-				to: n - 1
-				do: [:j | 
-					t := j asFloat / n asFloat.
-					endPoint := x3 * t + x2 * t + x1 * t + x @ (y3 * t + y2 * t + y1 * t + y).
-					endPointsBlock value: beginPoint value: endPoint.
-					beginPoint := endPoint].
-			endPoint := (x := cs first atWrap: i + 1) @ (y := cs fifth atWrap: i + 1).
-			endPointsBlock value: beginPoint value: endPoint.
-			beginPoint := endPoint]
+
+	| beginPoint |
+	beginPoint := nil.
+	self vertices
+		do: [ :vert | 
+			beginPoint ifNotNil: [ endPointsBlock value: beginPoint value: vert ].
+			beginPoint := vert ].
+	endPointsBlock value: beginPoint value: self vertices first
 ]
 
 { #category : #private }
 TLPolygonMorph >> privateMoveBy: delta [
 	super privateMoveBy: delta.
 	vertices := self vertices collect: [:p | p + delta].
-	curveState := nil.  "Force recomputation"
 	(self valueOfProperty: #referencePosition) ifNotNil:
 		[:oldPos | self setProperty: #referencePosition toValue: oldPos + delta]
 ]
@@ -514,13 +249,6 @@ TLPolygonMorph >> referencePosition [
 	"Return the current reference position of the receiver"
 	^ self valueOfProperty: #referencePosition ifAbsent: [super referencePosition]
 
-]
-
-{ #category : #caching }
-TLPolygonMorph >> releaseCachedState [
-
-	super releaseCachedState.
-	curveState := nil
 ]
 
 { #category : #geometry }
@@ -553,15 +281,6 @@ TLPolygonMorph >> scale: scaleFactor [
 	super scale: scaleFactor.
 ]
 
-{ #category : #'cubic support' }
-TLPolygonMorph >> segmentedSlopesOf: knots [ 
-	"For a collection of floats. Returns the slopes for straight 
-	segments between vertices."
-	"last slope closes the polygon. Always return same size as 
-	self. "
-	^ knots collectWithIndex: [:x :i | (knots atWrap: i + 1) - x]
-]
-
 { #category : #athens }
 TLPolygonMorph >> setDashOnStroke: anAthensStrokePaint [
 	| d commonOffset |
@@ -591,11 +310,12 @@ TLPolygonMorph >> setVertices: newVertices [
 
 { #category : #smoothing }
 TLPolygonMorph >> slopes: knots [
-	"Choose slopes according to state of polygon"
-
-	^ self isCurve
-		ifTrue: [ self closedCubicSlopesOf: knots ]
-		ifFalse: [ self segmentedSlopesOf: knots ]
+	"For a collection of floats. Returns the slopes for straight 
+	segments between vertices."
+	"last slope closes the polygon. Always return same size as 
+	self. "
+	
+	^ knots collectWithIndex: [:x :i | (knots atWrap: i + 1) - x]
 ]
 
 { #category : #accessing }
@@ -618,7 +338,9 @@ TLPolygonMorph >> stepTime [
 TLPolygonMorph >> todo [
 	self flag: #todo. 
 	
-	"There is some code to manage dash borders but we do not want to use it like that. We want to directly use the border style. So we will need to review everything related to the dashing and add dot border and double border to match cytoscape features."
+	"- There is some code to manage dash borders but we do not want to use it like that. We want to directly use the border style. So we will need to review everything related to the dashing and add dot border and double border to match cytoscape features.
+	- The containsPoints: method does not take curvy shapes into account. Maybe we should have another class for curvy shapes?
+	- See if we can simplify the implementation using the Polygon class."
 ]
 
 { #category : #'cubic support' }
