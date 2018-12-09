@@ -34,6 +34,17 @@ Class {
 	#category : #'Telescope-Morphic'
 }
 
+{ #category : #initialization }
+TLAthensSceneView >> addResetButton [
+	self
+		addMorph:
+			(PluggableButtonMorph
+				newButtonFor: self
+				action: #resetTransformations
+				label: 'Reset'
+				help: 'Reset the transfomations of the visu')
+]
+
 { #category : #colors }
 TLAthensSceneView >> backgroundColor [
 	^ Smalltalk ui theme backgroundColor
@@ -90,11 +101,12 @@ TLAthensSceneView >> handlesKeyboard: evt [
 	^ true
 ]
 
-{ #category : #'initialize-release' }
-TLAthensSceneView >> initialize [ 
+{ #category : #initialization }
+TLAthensSceneView >> initialize [
 	super initialize.
-	keepRefreshing := true. "If I do not set this to true, the events are messed up when I move the window. The events going to the old bounds works, but not the ones from the new bounds. Maybe there is a bug somewhere?"
-	shiftPressed := false
+	keepRefreshing := true.	"If I do not set this to true, the events are messed up when I move the window. The events going to the old bounds works, but not the ones from the new bounds. Maybe there is a bug somewhere?"
+	shiftPressed := false.
+	self addResetButton
 ]
 
 { #category : #testing }
@@ -148,6 +160,11 @@ TLAthensSceneView >> mouseWheel: event [
 					center := transform inverseTransform: event cursorPoint - bounds origin.
 					self startRotating: rotation center: center ] ]
 		ifFalse: [ super mouseWheel: event ]
+]
+
+{ #category : #initialization }
+TLAthensSceneView >> resetTransformations [
+	transform loadIdentity
 ]
 
 { #category : #drawing }
