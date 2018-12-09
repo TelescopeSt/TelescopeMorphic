@@ -71,5 +71,5 @@ TLMorphSimpleNode >> innerMorph: anObject [
 { #category : #'event handling' }
 TLMorphSimpleNode >> mouseDown: evt [
 	super mouseDown: evt.
-	self color: Color random
+	self innerMorph color: Color random
 ]
