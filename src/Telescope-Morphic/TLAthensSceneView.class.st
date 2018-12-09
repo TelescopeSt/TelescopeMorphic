@@ -30,6 +30,12 @@ TLAthensSceneView >> drawOn: canvas [
 				color: Smalltalk ui theme textColor ]
 ]
 
+{ #category : #'initialize-release' }
+TLAthensSceneView >> initialize [ 
+	super initialize.
+	transform := TLAthensAffineTransform new
+]
+
 { #category : #drawing }
 TLAthensSceneView >> showDebugInfo [
 	^ TLMorphic development

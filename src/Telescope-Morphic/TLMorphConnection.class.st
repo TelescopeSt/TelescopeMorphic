@@ -58,7 +58,7 @@ TLMorphConnection >> drawOn: aCanvas [
 TLMorphConnection >> drawOnAthensCanvas: anAthensCanvas [
 	| shape stroke |
 	shape := self asAthensPathOn: anAthensCanvas.
-	stroke := anAthensCanvas setStrokePaint: Color black.
+	stroke := anAthensCanvas setStrokePaint: self color.
 	stroke width: "border width" 2.
 	"self dashedBorder notNil
 		ifTrue: [ self setDashOnStroke: stroke ]."
