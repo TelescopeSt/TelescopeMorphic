@@ -1,8 +1,6 @@
 Class {
 	#name : #TLPolygonMorph,
 	#superclass : #BorderedMorph,
-	#traits : 'TAbleToRotate',
-	#classTraits : 'TAbleToRotate classTrait',
 	#instVars : [
 		'baseVertices',
 		'vertices',
@@ -323,6 +321,7 @@ TLPolygonMorph >> dashedBorder [
 
 { #category : #dashes }
 TLPolygonMorph >> dashedBorder: dashSpec [
+	self flag: #todo. "I will need to update the doc because it comes from somewhere else but we do not want all those features so we are updating all that"
 	"A dash spec is a 3- or 5-element array with
 		{ length of normal border color.
 		length of alternate border color.
@@ -404,19 +403,14 @@ TLPolygonMorph >> drawOn: aCanvas [
 
 { #category : #athens }
 TLPolygonMorph >> drawOnAthensCanvas: anAthensCanvas [
-	| border shape stroke |
-	border := self borderStyle.
+	| shape stroke |
 	shape := self asAthensPathOn: anAthensCanvas.
 	anAthensCanvas setPaint: self fillStyle.
 	anAthensCanvas drawShape: shape.
-	stroke := anAthensCanvas setStrokePaint: border color.
-	stroke width: border width.
+	stroke := anAthensCanvas setStrokePaint: self borderStyle.
 	self dashedBorder notNil
 		ifTrue: [ self setDashOnStroke: stroke ].
-	anAthensCanvas drawShape: shape.
-	self hasTwoColorDash
-		ifTrue: [ self setSecondColorDashOnStroke: stroke.
-			anAthensCanvas drawShape: shape ].
+	anAthensCanvas drawShape: shape
 ]
 
 { #category : #geometry }
@@ -432,13 +426,6 @@ TLPolygonMorph >> getVertices [
 	"For curves, enumerate the full set of interpolated points"
 	^ Array streamContents:
 		[:s | self lineSegmentsDo: [:pt1 :pt2 | s nextPut: pt1]]
-]
-
-{ #category : #drawing }
-TLPolygonMorph >> hasTwoColorDash [
-	" return true if the dash spec has another color"
-
-	^ self dashedBorder notNil and: [ self dashedBorder size > 2 ]
 ]
 
 { #category : #initialization }
@@ -595,22 +582,6 @@ TLPolygonMorph >> setRotationCenterFrom: aPoint [
 	self setProperty: #referencePosition toValue: aPoint
 ]
 
-{ #category : #athens }
-TLPolygonMorph >> setSecondColorDashOnStroke: anAthensStrokePaint [
-	| d c commonOffset |
-	d := self dashedBorder.
-	c := d third.
-	commonOffset := d size > 3
-		ifTrue: [ d fourth ]
-		ifFalse: [ 0 ].
-	anAthensStrokePaint fillPaint: c.
-	anAthensStrokePaint
-		dashes:
-			{(d second).
-			(d first)}
-		offset: commonOffset + d second
-]
-
 { #category : #private }
 TLPolygonMorph >> setVertices: newVertices [
 	newVertices size <= 2 ifTrue: [ self error: 'We need at least 3 points for a polygon.' ].
@@ -641,6 +612,13 @@ TLPolygonMorph >> step [
 { #category : #testing }
 TLPolygonMorph >> stepTime [
 	^ 100
+]
+
+{ #category : #TODO }
+TLPolygonMorph >> todo [
+	self flag: #todo. 
+	
+	"There is some code to manage dash borders but we do not want to use it like that. We want to directly use the border style. So we will need to review everything related to the dashing and add dot border and double border to match cytoscape features."
 ]
 
 { #category : #'cubic support' }
