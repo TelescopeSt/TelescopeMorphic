@@ -1,6 +1,6 @@
 Class {
 	#name : #TLAthensSceneView,
-	#superclass : #AthensSceneView,
+	#superclass : #AthensInteractiveScene,
 	#category : #'Telescope-Morphic'
 }
 

@@ -39,6 +39,11 @@ TLMorphSimpleNode >> dimension [
 	^ self extent
 ]
 
+{ #category : #'event handling' }
+TLMorphSimpleNode >> handlesMouseDown: evt [
+	^ true
+]
+
 { #category : #hack }
 TLMorphSimpleNode >> incomingAdjacentNodes [
 	self flag: #TODO. "This is because of an issue of the connector. Normally, a GUI element should not hold the model node neither the connector should interact with GUI elements."
@@ -61,4 +66,10 @@ TLMorphSimpleNode >> innerMorph: anObject [
 	self innerMorph ifNotNil: [ self removeMorph: self innerMorph ].
 	innerMorph := anObject.
 	self addMorphCentered: self innerMorph
+]
+
+{ #category : #'event handling' }
+TLMorphSimpleNode >> mouseDown: evt [
+	super mouseDown: evt.
+	self color: Color random
 ]
