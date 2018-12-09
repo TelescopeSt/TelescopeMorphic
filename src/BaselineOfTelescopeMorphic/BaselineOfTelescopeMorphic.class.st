@@ -11,10 +11,21 @@ BaselineOfTelescopeMorphic >> baseline: spec [
 		for: #common
 		do: [
 			"Dependencies"
-			self telescope: spec.
+			self 
+				geometry: spec;
+				telescope: spec.
 			
 			"Packages"
-			spec package: 'Telescope-Morphic' with: [ spec requires: 'Telescope' ] ]
+			spec package: 'Telescope-Morphic' with: [ spec requires: #('Telescope' 'Geometry') ] ]
+]
+
+{ #category : #dependencies }
+BaselineOfTelescopeMorphic >> geometry: spec [
+	spec
+		baseline: 'Geometry'
+		with: [ spec
+				loads: #('Core');
+				repository: 'github://TelescopeSt/Geometry:v1.x.x/src' ]
 ]
 
 { #category : #dependencies }
