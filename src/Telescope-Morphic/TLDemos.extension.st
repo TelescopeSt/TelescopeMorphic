@@ -16,5 +16,5 @@ TLDemos class >> exampleAAAMorphic [
 	visualization legend nodeShapeDescription: #displayName forNodes: [ visualization obtain recursively nodes ].
 	visualization addNodesFromEntities: visualization generator nodesShapesAvailableForConnector.
 	20 timesRepeat: [ visualization nodes atRandom connectIfNotTo: visualization nodes atRandom ].
-	visualization open
+	^ visualization
 ]
