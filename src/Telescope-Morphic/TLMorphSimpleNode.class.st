@@ -78,3 +78,11 @@ TLMorphSimpleNode >> mouseDown: evt [
 	super mouseDown: evt.
 	self innerMorph color: Color random
 ]
+
+{ #category : #'event handling' }
+TLMorphSimpleNode >> mouseMove: evt [
+	self athensSceneView
+		ifNotNil: [ :sv | self center: (sv pointPositionInScene: evt position) ]
+		ifNil: [ self center: evt position ].
+	^ true
+]

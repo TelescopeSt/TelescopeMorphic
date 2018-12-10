@@ -1,7 +1,7 @@
 Extension { #name : #UserInputEvent }
 
 { #category : #'*Telescope-Morphic' }
-UserInputEvent >> prepareEventFrom: aTLAthensSceneView toMorphicAt: aPoint [
+UserInputEvent >> prepareEventFromAthens: anAthensSceneView [
 	self wasHandled: false.
-	position := aPoint
+	position := (anAthensSceneView pointPositionInScene: position)
 ]

@@ -45,6 +45,11 @@ TLAthensSceneView >> addResetButton [
 				help: 'Reset the transfomations of the visu')
 ]
 
+{ #category : #accessing }
+TLAthensSceneView >> athensSceneView [
+	^ self
+]
+
 { #category : #colors }
 TLAthensSceneView >> backgroundColor [
 	^ Smalltalk ui theme backgroundColor
@@ -84,20 +89,18 @@ TLAthensSceneView >> drawOn: canvas [
 
 { #category : #'event handling' }
 TLAthensSceneView >> eventHandledByScene: evt [
-	^ scene handleEvent: evt in: self at: (self eventPositionInScene: evt)
-]
-
-{ #category : #'event handling' }
-TLAthensSceneView >> eventPositionInScene: evt [
-	| pt |
-	pt := evt position - self topLeft.
-	^ transform inverseTransform: pt
+	^ scene handleEvent: evt in: self
 ]
 
 { #category : #'event handling' }
 TLAthensSceneView >> handlesKeyboard: evt [
 	"I need to handles focus to know when the user will press shift"
 	
+	^ true
+]
+
+{ #category : #'event handling' }
+TLAthensSceneView >> handlesMouseMove: evt [
 	^ true
 ]
 
@@ -162,9 +165,20 @@ TLAthensSceneView >> mouseWheel: event [
 		ifFalse: [ super mouseWheel: event ]
 ]
 
+{ #category : #'event handling' }
+TLAthensSceneView >> pointPositionInScene: pt [
+	^ transform inverseTransform: (pt - self topLeft)
+]
+
 { #category : #initialization }
 TLAthensSceneView >> resetTransformations [
 	transform loadIdentity
+]
+
+{ #category : #accessing }
+TLAthensSceneView >> scene: aScene [
+	aScene morph privateOwner: self.
+	^ super scene: aScene
 ]
 
 { #category : #drawing }
