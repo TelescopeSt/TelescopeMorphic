@@ -33,13 +33,9 @@ TLMorphicConnector >> applyLayoutOf: aTLVisualization on: aCollection [
 { #category : #'generation - connection' }
 TLMorphicConnector >> createElementConnection: aTLConnection From: aTLSimpleNode to: anotherTLSimpleNode [
 	| morphicConnection |
-	self flag: #todo. "Later we should have virtual connections"
+	self flag: #todo.	"Later we should have virtual connections"
 	morphicConnection := aTLConnection asMorphicConnection.
-	morphicConnection
-		connect: (self shapeByDrawable at: aTLSimpleNode) morph to: (self shapeByDrawable at: anotherTLSimpleNode) morph.
-	
-	self registerShape: morphicConnection forDrawable: aTLConnection.
-	
+	morphicConnection connect: (self shapeByDrawable at: aTLSimpleNode) morph to: (self shapeByDrawable at: anotherTLSimpleNode) morph.
 	^ morphicConnection
 ]
 
