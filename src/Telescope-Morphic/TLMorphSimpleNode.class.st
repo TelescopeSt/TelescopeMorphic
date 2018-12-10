@@ -72,7 +72,7 @@ TLMorphSimpleNode >> innerMorph [
 TLMorphSimpleNode >> innerMorph: anObject [
 	self innerMorph ifNotNil: [ self removeMorph: self innerMorph ].
 	innerMorph := anObject.
-	self addMorphCentered: self innerMorph
+	self addMorph: self innerMorph
 ]
 
 { #category : #'event handling' }
