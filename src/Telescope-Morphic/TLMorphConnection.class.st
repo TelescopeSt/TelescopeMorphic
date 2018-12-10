@@ -5,7 +5,7 @@ Class {
 		'fromMorph',
 		'toMorph'
 	],
-	#category : #'Telescope-Morphic'
+	#category : #'Telescope-Morphic-Morphs'
 }
 
 { #category : #'instance creation' }

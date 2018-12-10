@@ -1,7 +1,7 @@
 Class {
 	#name : #TLMorphicConnector,
 	#superclass : #TLViewConnector,
-	#category : #'Telescope-Morphic'
+	#category : #'Telescope-Morphic-Connector'
 }
 
 { #category : #accessing }
@@ -11,8 +11,7 @@ TLMorphicConnector class >> priority [
 
 { #category : #view }
 TLMorphicConnector >> addElementConnectionInView: aTLMorphConnection [ 
-	self view
-		addMorph: aTLMorphConnection
+	self view addMorph: aTLMorphConnection
 ]
 
 { #category : #view }
@@ -23,8 +22,7 @@ TLMorphicConnector >> addElementLegendInView: aTLMorphicConnector [
 
 { #category : #view }
 TLMorphicConnector >> addElementNodeInView: element [
-	self view
-		addMorph: element
+	self view addMorph: element morph
 ]
 
 { #category : #layout }
@@ -35,32 +33,14 @@ TLMorphicConnector >> applyLayoutOf: aTLVisualization on: aCollection [
 { #category : #'generation - connection' }
 TLMorphicConnector >> createElementConnection: aTLConnection From: aTLSimpleNode to: anotherTLSimpleNode [
 	| morphicConnection |
+	self flag: #todo. "Later we should have virtual connections"
 	morphicConnection := aTLConnection asMorphicConnection.
 	morphicConnection
-		connect: (self shapeByDrawable at: aTLSimpleNode) to: (self shapeByDrawable at: anotherTLSimpleNode).
+		connect: (self shapeByDrawable at: aTLSimpleNode) morph to: (self shapeByDrawable at: anotherTLSimpleNode) morph.
 	
 	self registerShape: morphicConnection forDrawable: aTLConnection.
 	
 	^ morphicConnection
-]
-
-{ #category : #'generation - node' }
-TLMorphicConnector >> createElementNodeFromNode: aTLNode [
-	| morphicNode |
-	morphicNode := aTLNode asMorphicNode.
-	
-	morphicNode modelNode: aTLNode. self flag: #TODO. "This is a hack."
-	
-	self registerShape: morphicNode forDrawable: aTLNode.
-	
-	^ morphicNode
-]
-
-{ #category : #'generation - group' }
-TLMorphicConnector >> createGroup: aTLGroup with: aCollection [ 
-	"Not needed here because a group is not displayed in the visu.
-	 Still need to return a collection."
-	^ aCollection
 ]
 
 { #category : #'generation - legend' }
@@ -81,6 +61,13 @@ TLMorphicConnector >> generateMouseOverInteraction: aTLMouseOverInteraction onDr
 { #category : #'generation-legendEntry' }
 TLMorphicConnector >> generateNodeShapeLegendEntry: aTLNodeShapeLegendEntry [ 
 	self flag: #todo
+]
+
+{ #category : #'generation - node' }
+TLMorphicConnector >> newVirtualNodeFor: aTLNode [
+	^ (super newVirtualNodeFor: aTLNode)
+		morph: aTLNode asMorphicNode;
+		yourself
 ]
 
 { #category : #accessing }
@@ -112,4 +99,9 @@ TLMorphicConnector >> updateLegend: aTLLegend [
 { #category : #view }
 TLMorphicConnector >> updateViewForVisualization: aTLVisualization [ 
 	self flag: 'TODO'
+]
+
+{ #category : #dependencies }
+TLMorphicConnector >> virtualNodeClass [
+	^ TLMorphicVirtualNode
 ]

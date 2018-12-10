@@ -1,10 +1,7 @@
 Class {
 	#name : #TLMorphic,
 	#superclass : #Object,
-	#classInstVars : [
-		'development'
-	],
-	#category : #'Telescope-Morphic'
+	#category : #'Telescope-Morphic-Core'
 }
 
 { #category : #'accessing-convenience' }

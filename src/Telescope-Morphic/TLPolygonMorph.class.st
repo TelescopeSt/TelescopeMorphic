@@ -7,7 +7,7 @@ Class {
 		'borderDashSpec',
 		'borderForm'
 	],
-	#category : #'Telescope-Morphic'
+	#category : #'Telescope-Morphic-Morphs'
 }
 
 { #category : #initialization }

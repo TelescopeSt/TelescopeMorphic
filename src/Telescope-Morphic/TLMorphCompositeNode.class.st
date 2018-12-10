@@ -1,9 +1,7 @@
 Class {
 	#name : #TLMorphCompositeNode,
 	#superclass : #Morph,
-	#traits : 'TLRequiredForConnector',
-	#classTraits : 'TLRequiredForConnector classTrait',
-	#category : #'Telescope-Morphic'
+	#category : #'Telescope-Morphic-Morphs'
 }
 
 { #category : #'instance creation' }

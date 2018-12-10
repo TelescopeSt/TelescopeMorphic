@@ -31,7 +31,7 @@ Class {
 	#instVars : [
 		'shiftPressed'
 	],
-	#category : #'Telescope-Morphic'
+	#category : #'Telescope-Morphic-Athens'
 }
 
 { #category : #initialization }

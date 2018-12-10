@@ -1,7 +1,7 @@
 Class {
 	#name : #TLMorphVisualization,
 	#superclass : #Morph,
-	#category : #'Telescope-Morphic'
+	#category : #'Telescope-Morphic-Morphs'
 }
 
 { #category : #initialization }

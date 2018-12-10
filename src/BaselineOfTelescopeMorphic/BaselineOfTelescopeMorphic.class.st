@@ -11,12 +11,14 @@ BaselineOfTelescopeMorphic >> baseline: spec [
 		for: #common
 		do: [
 			"Dependencies"
-			self 
+			self
 				geometry: spec;
 				telescope: spec.
-			
+
 			"Packages"
-			spec package: 'Telescope-Morphic' with: [ spec requires: #('Telescope' 'Geometry') ] ]
+			spec
+				package: 'Telescope-Morphic' with: [ spec requires: #('Telescope' 'Geometry') ];
+				package: 'Telescope-Morphic-Connector' with: [ spec requires: #('Telescope-Morphic') ] ]
 ]
 
 { #category : #dependencies }
