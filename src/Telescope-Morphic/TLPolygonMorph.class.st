@@ -8,21 +8,10 @@ Class {
 }
 
 { #category : #initialization }
-TLPolygonMorph class >> vertices: aCollection [
+TLPolygonMorph class >> shape: aGShape [
 	^ self new
-		setVertices: aCollection;
+		shape: aGShape;
 		yourself
-]
-
-{ #category : #athens }
-TLPolygonMorph >> asAthensPathOn: anAthensCanvas [
-	^ anAthensCanvas
-		createPath: [ :builder | 
-			builder absolute.
-			builder moveTo: self vertices first.
-			self vertices allButFirstDo: [ :p | builder lineTo: p ].
-			builder close.
-			builder ]
 ]
 
 { #category : #dashes }
@@ -46,7 +35,7 @@ TLPolygonMorph >> bounds: newBounds [
 TLPolygonMorph >> computeBounds [
 	| oldBounds delta |
 	oldBounds := bounds.
-	bounds := (self geometryElement encompasingRectangle expandBy: borderWidth * 0.5) expanded.
+	bounds := (self shape encompasingRectangle expandBy: borderWidth * 0.5) expanded.
 	
 	delta := bounds origin - oldBounds origin.
 	delta = (0@0) ifTrue: [ ^ self ]. "If the delta is 0@0 then the bounds did not changed and we have nothing to do more."
@@ -59,7 +48,7 @@ TLPolygonMorph >> computeBounds [
 
 { #category : #testing }
 TLPolygonMorph >> containsPoint: aPoint [
-	^ (super containsPoint: aPoint) and: [ self geometryElement includesPoint: aPoint ]
+	^ (super containsPoint: aPoint) and: [ self shape includesPoint: aPoint ]
 ]
 
 { #category : #dashes }
@@ -92,34 +81,28 @@ TLPolygonMorph >> dashedBorder: dashSpec [
 
 { #category : #athens }
 TLPolygonMorph >> drawOnAthensCanvas: anAthensCanvas [
-	| shape stroke |
-	shape := self asAthensPathOn: anAthensCanvas.
+	| athensShape stroke |
+	athensShape := self shape asAthensPathOn: anAthensCanvas.
 	anAthensCanvas setPaint: self fillStyle.
-	anAthensCanvas drawShape: shape.
+	anAthensCanvas drawShape: athensShape.
 	stroke := anAthensCanvas setStrokePaint: self borderStyle.
 	self dashedBorder notNil
 		ifTrue: [ self setDashOnStroke: stroke ].
-	anAthensCanvas drawShape: shape
+	anAthensCanvas drawShape: athensShape
 ]
 
 { #category : #geometry }
 TLPolygonMorph >> extent: newExtent [
 	"The bounds of this morph are computed from the vertices of the polygon. Thus, to change the bounds we need to fit the polygon in the extent."
 
-	self geometryElement fitInExtent: newExtent.
+	self shape fitInExtent: newExtent.
 	self computeBounds
-]
-
-{ #category : #initialization }
-TLPolygonMorph >> initialize [
-	super initialize.
-	geometryElement := GPolygon new
 ]
 
 { #category : #private }
 TLPolygonMorph >> privateMoveBy: delta [
 	super privateMoveBy: delta.
-	self geometryElement moveBy: delta
+	self shape translateBy: delta
 ]
 
 { #category : #athens }
@@ -136,26 +119,9 @@ TLPolygonMorph >> setDashOnStroke: anAthensStrokePaint [
 		offset: commonOffset
 ]
 
-{ #category : #accessing }
-TLPolygonMorph >> setVertices: newVertices [
-	newVertices size <= 2 ifTrue: [ self error: 'We need at least 3 points for a polygon.' ].
-	self vertices: newVertices.
-	self computeBounds
-]
-
 { #category : #TODO }
 TLPolygonMorph >> todo [
 	self flag: #todo. 
 	
 	"- There is some code to manage dash borders but we do not want to use it like that. We want to directly use the border style. So we will need to review everything related to the dashing and add dot border and double border to match cytoscape features"
-]
-
-{ #category : #accessing }
-TLPolygonMorph >> vertices [
-	^ self geometryElement vertices
-]
-
-{ #category : #accessing }
-TLPolygonMorph >> vertices: anObject [
-	self geometryElement initializeVertices: anObject
 ]

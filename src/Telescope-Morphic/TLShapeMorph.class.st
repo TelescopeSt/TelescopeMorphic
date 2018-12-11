@@ -2,7 +2,7 @@ Class {
 	#name : #TLShapeMorph,
 	#superclass : #BorderedMorph,
 	#instVars : [
-		'geometryElement'
+		'shape'
 	],
 	#category : #'Telescope-Morphic-Morphs'
 }
@@ -13,13 +13,16 @@ TLShapeMorph >> couldHaveRoundedCorners [
 ]
 
 { #category : #accessing }
-TLShapeMorph >> geometryElement [
-	^ geometryElement
+TLShapeMorph >> shape [
+	^ shape
 ]
 
 { #category : #accessing }
-TLShapeMorph >> geometryElement: anObject [
-	geometryElement := anObject
+TLShapeMorph >> shape: aGShape [
+	shape = aGShape ifTrue: [ ^ self ].
+	
+	shape := aGShape.
+	self computeBounds
 ]
 
 { #category : #TODO }
