@@ -68,7 +68,7 @@ TLMorphicConnector >> newVirtualNodeFor: aTLNode [
 
 { #category : #accessing }
 TLMorphicConnector >> nodesShapesAvailableForConnector [
-	^ TLSimpleShape allSubclasses select: [ :class | [ class asMorphNode. true ] on: TLNotSupportedFunctionalityException do: [ false ] ]
+	^ TLSimpleShape allSubclasses select: [ :class | [ class asGShape. true ] on: TLNotSupportedFunctionalityException do: [ false ] ]
 ]
 
 { #category : #opening }

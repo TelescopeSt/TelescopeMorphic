@@ -1,8 +1,8 @@
 Extension { #name : #TLSimpleShape }
 
 { #category : #'*Telescope-Morphic' }
-TLSimpleShape class >> asMorphNode [
-	[ ^ TLShapeMorph shape: (GPolygon newVertices: self morphicPolygonPoints) ]
+TLSimpleShape class >> asGShape [
+	[ ^ (GPolygon newVertices: self morphicPolygonPoints) ]
 		on: SubclassResponsibility
 		do: [ TLNotSupportedFunctionalityException signal: 'This shape is not available for nodes.' ]
 ]

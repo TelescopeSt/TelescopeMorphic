@@ -16,8 +16,3 @@ TLMorphCompositeNode >> adaptToStylesheet: aTLStylesheet forCompositeNode: aTLNo
 	self flag: #todo.
 	self shouldBeImplemented
 ]
-
-{ #category : #accessing }
-TLMorphCompositeNode >> children [
-	^ self submorphs
-]

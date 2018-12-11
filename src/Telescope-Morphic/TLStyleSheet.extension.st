@@ -5,6 +5,7 @@ TLStyleSheet >> applyMorphicNodeStyleFor: aNode on: aMorph [
 	| nodeLabelPosition shape |
 	self flag: #todo. "Not finished"
 	aMorph
+		shape: (self obtainValue: #shape forEntity: aNode entity inNode: aNode) asGShape;	
 		color: (self obtainValue: #backgroundColor forEntity: aNode entity inNode: aNode);
 		borderColor: (self obtainValue: #borderColor forEntity: aNode entity inNode: aNode);
 		borderWidth: (self obtainValue: #borderWidth forEntity: aNode entity inNode: aNode).
