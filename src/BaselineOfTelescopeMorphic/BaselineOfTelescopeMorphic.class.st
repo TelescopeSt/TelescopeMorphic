@@ -27,10 +27,10 @@ BaselineOfTelescopeMorphic >> geometry: spec [
 		baseline: 'Geometry'
 		with: [ spec
 				loads: #('Core');
-				repository: 'github://TelescopeSt/Geometry:v1.x.x/src' ]
+				repository: 'github://TelescopeSt/Geometry:master/src' ]
 ]
 
 { #category : #dependencies }
 BaselineOfTelescopeMorphic >> telescope: spec [
-	spec baseline: 'Telescope' with: [ spec repository: 'github://TelescopeSt/Telescope:v2.x.x/src' ]
+	spec baseline: 'Telescope' with: [ spec repository: 'github://TelescopeSt/Telescope:development/src' ]
 ]
