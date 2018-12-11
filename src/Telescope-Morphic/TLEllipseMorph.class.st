@@ -1,9 +1,6 @@
 Class {
 	#name : #TLEllipseMorph,
-	#superclass : #BorderedMorph,
-	#instVars : [
-		'ellipse'
-	],
+	#superclass : #TLShapeMorph,
 	#category : #'Telescope-Morphic-Morphs'
 }
 
@@ -46,11 +43,6 @@ TLEllipseMorph >> containsPoint: aPoint [
 	^ (delta x asFloat / xOverY) squared + delta y squared <= radius squared
 ]
 
-{ #category : #accessing }
-TLEllipseMorph >> couldHaveRoundedCorners [
-	^ false
-]
-
 { #category : #athens }
 TLEllipseMorph >> drawOnAthensCanvas: anAthensCanvas [
 	| border shape |
@@ -63,14 +55,4 @@ TLEllipseMorph >> drawOnAthensCanvas: anAthensCanvas [
 	anAthensCanvas draw.
 	(anAthensCanvas setStrokePaint: border color) width: border width.
 	anAthensCanvas draw
-]
-
-{ #category : #accessing }
-TLEllipseMorph >> ellipse [
-	^ ellipse
-]
-
-{ #category : #accessing }
-TLEllipseMorph >> ellipse: anObject [
-	ellipse := anObject
 ]

@@ -1,9 +1,8 @@
 Class {
 	#name : #TLPolygonMorph,
-	#superclass : #BorderedMorph,
+	#superclass : #TLShapeMorph,
 	#instVars : [
-		'borderDashSpec',
-		'polygon'
+		'borderDashSpec'
 	],
 	#category : #'Telescope-Morphic-Morphs'
 }
@@ -47,7 +46,7 @@ TLPolygonMorph >> bounds: newBounds [
 TLPolygonMorph >> computeBounds [
 	| oldBounds delta |
 	oldBounds := bounds.
-	bounds := (polygon encompasingRectangle expandBy: borderWidth * 0.5) expanded.
+	bounds := (self geometryElement encompasingRectangle expandBy: borderWidth * 0.5) expanded.
 	
 	delta := bounds origin - oldBounds origin.
 	delta = (0@0) ifTrue: [ ^ self ]. "If the delta is 0@0 then the bounds did not changed and we have nothing to do more."
@@ -60,12 +59,7 @@ TLPolygonMorph >> computeBounds [
 
 { #category : #testing }
 TLPolygonMorph >> containsPoint: aPoint [
-	^ (super containsPoint: aPoint) and: [ self polygon includesPoint: aPoint ]
-]
-
-{ #category : #testing }
-TLPolygonMorph >> couldHaveRoundedCorners [
-	^ false
+	^ (super containsPoint: aPoint) and: [ self geometryElement includesPoint: aPoint ]
 ]
 
 { #category : #dashes }
@@ -112,30 +106,20 @@ TLPolygonMorph >> drawOnAthensCanvas: anAthensCanvas [
 TLPolygonMorph >> extent: newExtent [
 	"The bounds of this morph are computed from the vertices of the polygon. Thus, to change the bounds we need to fit the polygon in the extent."
 
-	self polygon fitInExtent: newExtent.
+	self geometryElement fitInExtent: newExtent.
 	self computeBounds
 ]
 
 { #category : #initialization }
 TLPolygonMorph >> initialize [
 	super initialize.
-	polygon := GPolygon new
-]
-
-{ #category : #accessing }
-TLPolygonMorph >> polygon [
-	^ polygon
-]
-
-{ #category : #accessing }
-TLPolygonMorph >> polygon: anObject [
-	polygon := anObject
+	geometryElement := GPolygon new
 ]
 
 { #category : #private }
 TLPolygonMorph >> privateMoveBy: delta [
 	super privateMoveBy: delta.
-	self polygon moveBy: delta
+	self geometryElement moveBy: delta
 ]
 
 { #category : #athens }
@@ -168,10 +152,10 @@ TLPolygonMorph >> todo [
 
 { #category : #accessing }
 TLPolygonMorph >> vertices [
-	^ self polygon vertices
+	^ self geometryElement vertices
 ]
 
 { #category : #accessing }
 TLPolygonMorph >> vertices: anObject [
-	self polygon initializeVertices: anObject
+	self geometryElement initializeVertices: anObject
 ]
