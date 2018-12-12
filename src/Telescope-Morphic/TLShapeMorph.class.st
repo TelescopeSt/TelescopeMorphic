@@ -39,7 +39,7 @@ TLShapeMorph >> computeBounds [
 	bounds := (self shape encompassingRectangle expandBy: borderWidth * 0.5) expanded.
 	
 	delta := bounds origin - oldBounds origin.
-	delta = (0@0) ifTrue: [ ^ self ]. "If the delta is 0@0 then the bounds did not changed and we have nothing to do more."
+	(delta closeTo: (0@0)) ifTrue: [ ^ self ]. "If the delta is 0@0 then the bounds did not changed and we have nothing to do more."
 	
 	"since we are directly updating bounds, see if any ordinary submorphs exist and move them accordingly"
 	self submorphsDo: [ :each | each position: each position + delta ].

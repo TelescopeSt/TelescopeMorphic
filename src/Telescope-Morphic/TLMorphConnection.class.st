@@ -22,42 +22,16 @@ TLMorphConnection >> adaptToStylesheet: aTLStylesheet forConnection: aConnection
 	self color: aTLStylesheet color
 ]
 
-{ #category : #drawing }
-TLMorphConnection >> asAthensLinePathOn: anAthensCanvas [
-	^ anAthensCanvas
-		createPath: [ :builder | 
-			builder absolute.
-			builder moveTo: self fromMorph center.
-			builder lineTo: self toMorph center.
-			builder close.
-			builder ]
-]
-
-{ #category : #drawing }
-TLMorphConnection >> asAthensPathOn: anAthensCanvas [
-	self flag: #todo.
-	^ "self isCurve
-		ifTrue: [ self asAthensCurvedPathOn: anAthensCanvas ]
-		ifFalse: [" self asAthensLinePathOn: anAthensCanvas "]"
-]
-
 { #category : #connecting }
-TLMorphConnection >> connect: aTLMorphSimpleNode to: aTLMorphSimpleNode2 [ 
-	self
-		fromMorph: aTLMorphSimpleNode;
-		toMorph: aTLMorphSimpleNode2
-]
-
-{ #category : #drawing }
-TLMorphConnection >> drawOn: aCanvas [
-	aCanvas
-		line: self fromMorph center to: self toMorph center color: self color
+TLMorphConnection >> connect: aMorphNode to: anotherMorphNode [
+	fromMorph := aMorphNode.
+	toMorph := anotherMorphNode
 ]
 
 { #category : #drawing }
 TLMorphConnection >> drawOnAthensCanvas: anAthensCanvas [
 	| shape stroke |
-	shape := self asAthensPathOn: anAthensCanvas.
+	shape := self segment asAthensPathOn: anAthensCanvas.
 	stroke := anAthensCanvas setStrokePaint: self color.
 	stroke width: "border width" 2.
 	"self dashedBorder notNil
@@ -71,8 +45,20 @@ TLMorphConnection >> fromMorph [
 ]
 
 { #category : #accessing }
-TLMorphConnection >> fromMorph: anObject [
-	fromMorph := anObject
+TLMorphConnection >> segment [
+	"Maybe we should cache this later?"
+	| fromMorphCenter toMorphCenter lineBetweenCenters segmentBetweenShapes intersectionPoints |
+	fromMorphCenter := self fromMorph center.
+	toMorphCenter :=  self toMorph center.
+	lineBetweenCenters := GLine through: fromMorphCenter and: toMorphCenter.
+	segmentBetweenShapes := GSegment new.
+	intersectionPoints := self fromMorph shape intersectLine: lineBetweenCenters.
+	intersectionPoints ifEmpty: [ ^ GSegment with: fromMorphCenter with: toMorphCenter ]. "How could that happen?"
+	segmentBetweenShapes v1: (intersectionPoints fold: [ :point1 :point2 | ((point1 dist: toMorphCenter) < (point2 dist: toMorphCenter)) ifTrue: [ point1 ] ifFalse: [ point2 ] ]).
+	intersectionPoints := self toMorph shape intersectLine: lineBetweenCenters.
+	intersectionPoints ifEmpty: [ ^ GSegment with: fromMorphCenter with: toMorphCenter ]. "How could that happen?"
+	segmentBetweenShapes v2: (intersectionPoints fold: [ :point1 :point2 | ((point1 dist: fromMorphCenter) < (point2 dist: fromMorphCenter)) ifTrue: [ point1 ] ifFalse: [ point2 ] ]).
+	^ segmentBetweenShapes
 ]
 
 { #category : #accessing }
@@ -80,7 +66,8 @@ TLMorphConnection >> toMorph [
 	^ toMorph
 ]
 
-{ #category : #accessing }
-TLMorphConnection >> toMorph: anObject [
-	toMorph := anObject
+{ #category : #TODO }
+TLMorphConnection >> todo [
+	self flag: #todo.
+	"For now we only have straight segments. Since I do not like a world with only straight, we should implement hom... euh... curvy segments too"
 ]
