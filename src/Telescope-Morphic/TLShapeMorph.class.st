@@ -36,7 +36,7 @@ TLShapeMorph >> bounds: newBounds [
 TLShapeMorph >> computeBounds [
 	| oldBounds delta |
 	oldBounds := bounds.
-	bounds := (self shape encompassingRectangle expandBy: borderWidth * 0.5) expanded.
+	bounds := ((Rectangle origin: self shape encompassingRectangle origin corner: self shape encompassingRectangle corner) expandBy: borderWidth * 0.5) expanded.
 	
 	delta := bounds origin - oldBounds origin.
 	(delta closeTo: (0@0)) ifTrue: [ ^ self ]. "If the delta is 0@0 then the bounds did not changed and we have nothing to do more."
@@ -101,14 +101,20 @@ TLShapeMorph >> drawOnAthensCanvas: anAthensCanvas [
 TLShapeMorph >> extent: newExtent [
 	"The bounds of this morph are computed from the vertices of the polygon. Thus, to change the bounds we need to fit the polygon in the extent."
 
-	self shape fitInExtent: newExtent.
+	self shape
+		fitInExtent:
+			{newExtent x.
+			newExtent y} asGVector.
 	self computeBounds
 ]
 
 { #category : #private }
 TLShapeMorph >> privateMoveBy: delta [
 	super privateMoveBy: delta.
-	self shape translateBy: delta
+	self shape
+		translateBy:
+			{delta x.
+			delta y} asGVector
 ]
 
 { #category : #athens }

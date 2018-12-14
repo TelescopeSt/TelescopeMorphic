@@ -48,16 +48,16 @@ TLMorphConnection >> fromMorph [
 TLMorphConnection >> segment [
 	"Maybe we should cache this later?"
 	| fromMorphCenter toMorphCenter lineBetweenCenters segmentBetweenShapes intersectionPoints |
-	fromMorphCenter := self fromMorph center.
-	toMorphCenter :=  self toMorph center.
+	fromMorphCenter := self fromMorph center asGPoint.
+	toMorphCenter :=  self toMorph center asGPoint.
 	lineBetweenCenters := GLine through: fromMorphCenter and: toMorphCenter.
 	segmentBetweenShapes := GSegment new.
 	intersectionPoints := self fromMorph shape intersectLine: lineBetweenCenters.
 	intersectionPoints ifEmpty: [ ^ GSegment with: fromMorphCenter with: toMorphCenter ]. "How could that happen?"
-	segmentBetweenShapes v1: (intersectionPoints fold: [ :point1 :point2 | ((point1 dist: toMorphCenter) < (point2 dist: toMorphCenter)) ifTrue: [ point1 ] ifFalse: [ point2 ] ]).
+	segmentBetweenShapes v1: (intersectionPoints fold: [ :point1 :point2 | ((point1 distanceTo: toMorphCenter) < (point2 distanceTo: toMorphCenter)) ifTrue: [ point1 ] ifFalse: [ point2 ] ]).
 	intersectionPoints := self toMorph shape intersectLine: lineBetweenCenters.
 	intersectionPoints ifEmpty: [ ^ GSegment with: fromMorphCenter with: toMorphCenter ]. "How could that happen?"
-	segmentBetweenShapes v2: (intersectionPoints fold: [ :point1 :point2 | ((point1 dist: fromMorphCenter) < (point2 dist: fromMorphCenter)) ifTrue: [ point1 ] ifFalse: [ point2 ] ]).
+	segmentBetweenShapes v2: (intersectionPoints fold: [ :point1 :point2 | ((point1 distanceTo: fromMorphCenter) < (point2 distanceTo: fromMorphCenter)) ifTrue: [ point1 ] ifFalse: [ point2 ] ]).
 	^ segmentBetweenShapes
 ]
 
