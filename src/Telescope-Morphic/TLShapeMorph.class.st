@@ -36,7 +36,7 @@ TLShapeMorph >> bounds: newBounds [
 TLShapeMorph >> computeBounds [
 	| oldBounds delta |
 	oldBounds := bounds.
-	bounds := ((Rectangle origin: self shape encompassingRectangle origin corner: self shape encompassingRectangle corner) expandBy: borderWidth * 0.5) expanded.
+	bounds := (self shape encompassingRectangleAsPharoRectangle expandBy: borderWidth * 0.5) expanded.
 	
 	delta := bounds origin - oldBounds origin.
 	(delta closeTo: (0@0)) ifTrue: [ ^ self ]. "If the delta is 0@0 then the bounds did not changed and we have nothing to do more."

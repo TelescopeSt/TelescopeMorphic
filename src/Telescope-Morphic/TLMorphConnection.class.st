@@ -3,7 +3,8 @@ Class {
 	#superclass : #Morph,
 	#instVars : [
 		'fromMorph',
-		'toMorph'
+		'toMorph',
+		'segment'
 	],
 	#category : #'Telescope-Morphic-Morphs'
 }
@@ -22,6 +23,31 @@ TLMorphConnection >> adaptToStylesheet: aTLStylesheet forConnection: aConnection
 	self color: aTLStylesheet color
 ]
 
+{ #category : #accessing }
+TLMorphConnection >> computeSegment [
+	"Maybe we should cache this later? Or do not recompute it all the time"
+
+	| fromMorphCenter toMorphCenter lineBetweenCenters intersectionPoints |
+	fromMorphCenter := self fromMorph center asGPoint.
+	toMorphCenter := self toMorph center asGPoint.
+	
+	lineBetweenCenters := GLine through: fromMorphCenter and: toMorphCenter.
+
+	intersectionPoints := self fromMorph shape intersectLine: lineBetweenCenters.
+	segment
+		v1:
+			(intersectionPoints
+				ifEmpty: [ fromMorphCenter "This can happen if we overlap shapes" ]
+				ifNotEmpty: [ intersectionPoints fold: [ :point1 :point2 | (point1 distanceTo: toMorphCenter) < (point2 distanceTo: toMorphCenter) ifTrue: [ point1 ] ifFalse: [ point2 ] ] ]).
+
+	intersectionPoints := self toMorph shape intersectLine: lineBetweenCenters.
+	segment
+		v2:
+			(intersectionPoints
+				ifEmpty: [ toMorphCenter "This can happen if we overlap shapes" ]
+				ifNotEmpty: [ intersectionPoints fold: [ :point1 :point2 | (point1 distanceTo: fromMorphCenter) < (point2 distanceTo: fromMorphCenter) ifTrue: [ point1 ] ifFalse: [ point2 ] ] ])
+]
+
 { #category : #connecting }
 TLMorphConnection >> connect: aMorphNode to: anotherMorphNode [
 	fromMorph := aMorphNode.
@@ -31,7 +57,8 @@ TLMorphConnection >> connect: aMorphNode to: anotherMorphNode [
 { #category : #drawing }
 TLMorphConnection >> drawOnAthensCanvas: anAthensCanvas [
 	| shape stroke |
-	shape := self segment asAthensPathOn: anAthensCanvas.
+	self computeSegment.
+	shape := segment asAthensPathOn: anAthensCanvas.
 	stroke := anAthensCanvas setStrokePaint: self color.
 	stroke width: "border width" 2.
 	"self dashedBorder notNil
@@ -44,21 +71,10 @@ TLMorphConnection >> fromMorph [
 	^ fromMorph
 ]
 
-{ #category : #accessing }
-TLMorphConnection >> segment [
-	"Maybe we should cache this later?"
-	| fromMorphCenter toMorphCenter lineBetweenCenters segmentBetweenShapes intersectionPoints |
-	fromMorphCenter := self fromMorph center asGPoint.
-	toMorphCenter :=  self toMorph center asGPoint.
-	lineBetweenCenters := GLine through: fromMorphCenter and: toMorphCenter.
-	segmentBetweenShapes := GSegment new.
-	intersectionPoints := self fromMorph shape intersectLine: lineBetweenCenters.
-	intersectionPoints ifEmpty: [ ^ GSegment with: fromMorphCenter with: toMorphCenter ]. "How could that happen?"
-	segmentBetweenShapes v1: (intersectionPoints fold: [ :point1 :point2 | ((point1 distanceTo: toMorphCenter) < (point2 distanceTo: toMorphCenter)) ifTrue: [ point1 ] ifFalse: [ point2 ] ]).
-	intersectionPoints := self toMorph shape intersectLine: lineBetweenCenters.
-	intersectionPoints ifEmpty: [ ^ GSegment with: fromMorphCenter with: toMorphCenter ]. "How could that happen?"
-	segmentBetweenShapes v2: (intersectionPoints fold: [ :point1 :point2 | ((point1 distanceTo: fromMorphCenter) < (point2 distanceTo: fromMorphCenter)) ifTrue: [ point1 ] ifFalse: [ point2 ] ]).
-	^ segmentBetweenShapes
+{ #category : #initialization }
+TLMorphConnection >> initialize [ 
+	super initialize.
+	segment := GSegment new
 ]
 
 { #category : #accessing }
