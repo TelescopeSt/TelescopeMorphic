@@ -33,14 +33,14 @@ TLMorphConnection >> computeSegment [
 	
 	lineBetweenCenters := GLine through: fromMorphCenter and: toMorphCenter.
 
-	intersectionPoints := self fromMorph shape intersectLine: lineBetweenCenters.
+	intersectionPoints := self fromMorph shape intersectionPointsWith: lineBetweenCenters.
 	segment
 		v1:
 			(intersectionPoints
 				ifEmpty: [ fromMorphCenter "This can happen if we overlap shapes" ]
 				ifNotEmpty: [ intersectionPoints fold: [ :point1 :point2 | (point1 distanceTo: toMorphCenter) < (point2 distanceTo: toMorphCenter) ifTrue: [ point1 ] ifFalse: [ point2 ] ] ]).
 
-	intersectionPoints := self toMorph shape intersectLine: lineBetweenCenters.
+	intersectionPoints := self toMorph shape intersectionPointsWith: lineBetweenCenters.
 	segment
 		v2:
 			(intersectionPoints
