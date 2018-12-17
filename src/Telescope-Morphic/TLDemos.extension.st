@@ -15,6 +15,6 @@ TLDemos class >> exampleAAAMorphic [
 	visualization layout: TLCircularLayout.
 	visualization legend nodeShapeDescription: #displayName forNodes: [ visualization obtain recursively nodes ].
 	visualization addNodesFromEntities: visualization generator nodesShapesAvailableForConnector.
-	20 timesRepeat: [ visualization nodes atRandom connectIfNotTo: visualization nodes atRandom ].
+	30 timesRepeat: [ visualization nodes atRandom connectIfNotTo: visualization nodes atRandom ].
 	^ visualization
 ]
