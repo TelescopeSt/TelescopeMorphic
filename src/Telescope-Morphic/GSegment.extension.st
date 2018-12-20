@@ -10,3 +10,8 @@ GSegment >> asAthensPathOn: anAthensCanvas [
 			builder close.
 			builder ]
 ]
+
+{ #category : #'*Telescope-Morphic' }
+GSegment >> closeTo: aGPoint [
+	^ ((v2 distanceTo: aGPoint) + (aGPoint distanceTo: v1) - self length) abs < 0.05
+]

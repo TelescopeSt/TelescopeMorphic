@@ -23,6 +23,19 @@ TLMorphConnection >> adaptToStylesheet: aTLStylesheet forConnection: aConnection
 	self color: aTLStylesheet color
 ]
 
+{ #category : #layout }
+TLMorphConnection >> computeBounds [
+	| oldBounds delta |
+	oldBounds := bounds.
+	bounds := segment encompassingRectangleAsPharoRectangle expanded.
+
+	delta := bounds origin - oldBounds origin.
+	(delta closeTo: 0 @ 0) ifTrue: [ ^ self ].	"If the delta is 0@0 then the bounds did not changed and we have nothing to do more."
+
+	self layoutChanged.
+	self changed
+]
+
 { #category : #accessing }
 TLMorphConnection >> computeSegment [
 	"Maybe we should cache this later? Or do not recompute it all the time"
@@ -45,13 +58,20 @@ TLMorphConnection >> computeSegment [
 		v2:
 			(intersectionPoints
 				ifEmpty: [ toMorphCenter "This can happen if we overlap shapes" ]
-				ifNotEmpty: [ intersectionPoints fold: [ :point1 :point2 | (point1 distanceTo: fromMorphCenter) < (point2 distanceTo: fromMorphCenter) ifTrue: [ point1 ] ifFalse: [ point2 ] ] ])
+				ifNotEmpty: [ intersectionPoints fold: [ :point1 :point2 | (point1 distanceTo: fromMorphCenter) < (point2 distanceTo: fromMorphCenter) ifTrue: [ point1 ] ifFalse: [ point2 ] ] ]).
+			
+	self computeBounds
 ]
 
 { #category : #connecting }
 TLMorphConnection >> connect: aMorphNode to: anotherMorphNode [
 	fromMorph := aMorphNode.
 	toMorph := anotherMorphNode
+]
+
+{ #category : #'geometry testing' }
+TLMorphConnection >> containsPoint: aPoint [
+	^ segment closeTo: aPoint asGPoint
 ]
 
 { #category : #drawing }
@@ -71,10 +91,21 @@ TLMorphConnection >> fromMorph [
 	^ fromMorph
 ]
 
+{ #category : #'event handling' }
+TLMorphConnection >> handlesMouseDown: evt [
+	^ true
+]
+
 { #category : #initialization }
 TLMorphConnection >> initialize [ 
 	super initialize.
 	segment := GSegment new
+]
+
+{ #category : #'event handling' }
+TLMorphConnection >> mouseDown: evt [
+	super mouseDown: evt.
+	self color: Color random
 ]
 
 { #category : #accessing }
