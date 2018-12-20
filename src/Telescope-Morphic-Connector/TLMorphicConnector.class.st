@@ -22,7 +22,10 @@ TLMorphicConnector >> addElementLegendInView: aTLMorphicConnector [
 
 { #category : #view }
 TLMorphicConnector >> addElementNodeInView: element [
-	self view addMorph: element morph
+	self view addMorph: element morph.
+	
+	"To make the code easier the label is not a submorph of the node morph but the submorph store it. We need to say to the node morph to add it into the view if it exists"
+	element morph addLabelToVisualization
 ]
 
 { #category : #layout }
@@ -77,7 +80,7 @@ TLMorphicConnector >> open: aTLVisualization inWindowSized: aPoint titled: aStri
 	morph := TLMorphVisualization new.
 	
 	self view: morph.
-	self generateVisualization: aTLVisualization.
+	aTLVisualization generateWith: self.
 	
 	window := TLAthensSceneView new
 		scene: (AthensMorphScene new morph: morph);

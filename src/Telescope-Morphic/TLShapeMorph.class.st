@@ -101,20 +101,14 @@ TLShapeMorph >> drawOnAthensCanvas: anAthensCanvas [
 TLShapeMorph >> extent: newExtent [
 	"The bounds of this morph are computed from the vertices of the polygon. Thus, to change the bounds we need to fit the polygon in the extent."
 
-	self shape
-		fitInExtent:
-			{newExtent x.
-			newExtent y} asGVector.
+	self shape fitInExtent: {newExtent x . newExtent y} asGVector.
 	self computeBounds
 ]
 
 { #category : #private }
 TLShapeMorph >> privateMoveBy: delta [
 	super privateMoveBy: delta.
-	self shape
-		translateBy:
-			{delta x.
-			delta y} asGVector
+	self shape translateBy: {delta x . delta y} asGVector
 ]
 
 { #category : #athens }
