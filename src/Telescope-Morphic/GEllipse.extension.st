@@ -3,13 +3,13 @@ Extension { #name : #GEllipse }
 { #category : #'*Telescope-Morphic' }
 GEllipse >> asAthensPathOn: anAthensCanvas [
 	| halfWidth halfHeight |
-	halfWidth := self width / 2 asFloat.
-	halfHeight := self height / 2 asFloat.
+	halfWidth := self semiMajorAxisLength asFloat.
+	halfHeight := self semiMinorAxisLength asFloat.
 	^ anAthensCanvas
 		createPath: [ :builder | 
 			builder
 				absolute;
-				moveTo: self center;
+				moveTo: (self center x @ self center y);
 				relative;
 				moveTo: halfWidth negated @ 0;
 				curveVia: 0 @ (halfHeight negated * 0.55) and: (0.45 * halfWidth) @ halfHeight negated to: halfWidth @ halfHeight negated;

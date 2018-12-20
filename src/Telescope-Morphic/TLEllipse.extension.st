@@ -2,6 +2,5 @@ Extension { #name : #TLEllipse }
 
 { #category : #'*Telescope-Morphic' }
 TLEllipse class >> asGShape [
-	TLNotSupportedFunctionalityException signal.
-	^ GEllipse center: 0 @ 0 xRadius: 1 yRadius: 1
+	^ GEllipse center: 0 , 0 vertex: 1 , 0 coVertex: 0 , 1
 ]
