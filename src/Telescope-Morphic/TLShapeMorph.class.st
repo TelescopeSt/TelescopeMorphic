@@ -49,7 +49,7 @@ TLShapeMorph >> computeBounds [
 
 { #category : #testing }
 TLShapeMorph >> containsPoint: aPoint [
-	^ (super containsPoint: aPoint) and: [ self shape includesPoint: aPoint ]
+	^ (super containsPoint: aPoint) and: [ self shape includes: aPoint ]
 ]
 
 { #category : #accessing }
